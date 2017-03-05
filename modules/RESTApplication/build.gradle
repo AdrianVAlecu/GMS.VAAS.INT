@@ -1,7 +1,7 @@
 apply plugin: 'application'
 
 dependencies {
-    compile project(':DataStore')
+    compile project(':modules:DataStore')
 }
 
 mainClassName='com.gms.RESTApplication.RESTTester'

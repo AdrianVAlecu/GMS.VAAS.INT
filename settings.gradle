@@ -1,2 +1,2 @@
-include 'RESTApplication'
-include 'DataStore'
+include 'modules:RESTApplication'
+include 'modules:DataStore'

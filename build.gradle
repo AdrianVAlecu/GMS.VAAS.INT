@@ -12,7 +12,7 @@ subprojects {
     repositories{
         mavenCentral()
         flatDir() {
-            dirs "$rootProject.projectDir/DataStore/libs/summit/java"
+            dirs "$rootProject.projectDir/modules/DataStore/libs/summit/java"
         }
     }
 

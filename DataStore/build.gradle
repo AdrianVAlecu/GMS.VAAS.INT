@@ -1,0 +1,55 @@
+apply plugin: 'application'
+apply plugin: 'war'
+
+repositories{
+    flatDir() {
+        dirs "$rootProject.projectDir/DataStore/libs/summit/java"
+    }
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.7'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.7'
+    // https://mvnrepository.com/artifact/org.springframework/spring-context
+    compile group: 'org.springframework', name: 'spring-context', version: '4.3.7.RELEASE'
+
+    compile group: 'org.apache.axis2', name: 'axis2-kernel', version: '1.7.4'
+    compile group: 'org.apache.axis2', name: 'axis2-adb', version: '1.7.4'
+    compile group: 'org.apache.axis2', name: 'axis2-transport-local', version: '1.7.4'
+    compile group: 'org.apache.axis2', name: 'axis2-transport-http', version: '1.7.4'
+
+    compile group: 'log4j', name: 'log4j', version: '1.2.7'
+    compile group: 'xerces', name: 'xerces', version: '2.4.0'
+
+    compile group: 'BBGService', name: 'BBGService'
+    compile group: 'Dashboard', name: 'Dashboard'
+    compile group: 'dbutil', name: 'dbutil'
+    compile group: 'docxjni', name: 'docxjni'
+    compile group: 'ETKPoolServiceStub', name: 'ETKPoolServiceStub'
+    compile group: 'ETKServiceStub', name: 'ETKServiceStub'
+    compile group: 'ETKSessionStub', name: 'ETKSessionStub'
+    compile group: 'etoolkitapi_ws', name: 'etoolkitapi_ws'
+    compile group: 'fomsgviewer', name: 'fomsgviewer'
+    compile group: 'gcurveserver', name: 'gcurveserver'
+    compile group: 'GenerateID', name: 'GenerateID'
+    compile group: 'GenerateIDStub', name: 'GenerateIDStub'
+    compile group: 'genutil', name: 'genutil'
+    compile group: 'GFCacheObjects', name: 'GFCacheObjects'
+    compile group: 'GFDataBrowser', name: 'GFDataBrowser'
+    compile group: 'GFUtils', name: 'GFUtils'
+    compile group: 'mktsvrapijms', name: 'mktsvrapijms'
+    compile group: 'MonitorServiceStub', name: 'MonitorServiceStub'
+    compile group: 'securityutil', name: 'securityutil'
+    compile group: 'SummitNamingServiceStub', name: 'SummitNamingServiceStub'
+    compile group: 'xlsxjni', name: 'xlsxjni'
+
+}
+
+mainClassName='RestApplication'
+
+
+
+
+

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <!-- <bean name="tradesDAO" class="com.gms.datasource.files.FilesTradesDAO"> -->
+    <bean name="etkAPI" class="summit.etkapi_ws.SU_eToolkitAPI_Impl" />
+    
+    <bean name="tradesDAO" class="com.gms.datasource.summit.SummitTradesDAO">
+        <constructor-arg index="0" ref="etkAPI" />
+        <constructor-arg index="1" value="${summitUser}" />
+        <constructor-arg index="2" value="${summitPass}" />
+        <constructor-arg index="3" value="${summitApplication}" />
+        <constructor-arg index="4" value="${summitType}" />
+        <constructor-arg index="5" value="${summitDbEnv}" />
+        <constructor-arg index="6" value="${summitExtraParams}" />
+    </bean>
+    
+    <context:annotation-config />
+    <context:component-scan base-package="com.gms" />
+    
+    <context:property-placeholder location="summit.app.properties" />
+    
+</beans>

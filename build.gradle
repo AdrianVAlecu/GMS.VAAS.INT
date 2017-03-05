@@ -1,16 +1,59 @@
-
 allprojects {
-    apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'eclipse'
 
+    version = '1.0.0'
+
+}
+
+subprojects {
+    apply plugin: 'java'
+
     repositories{
         mavenCentral()
+        flatDir() {
+            dirs "$rootProject.projectDir/DataStore/libs/summit/java"
+        }
     }
 
 }
 
+configure(subprojects.findAll {it.name != 'NoFIlterForNow'}) {
+    jar {
+        from sourceSets.main.allJava
+        manifest {
+            attributes 'Title': 'GMS VAAS integration',
+                    'provider': 'GMS',
+                    'Version': version
+
+        }
+    }
+
+    uploadArchives {
+        repositories {
+            flatDir {
+                dirs 'target'
+            }
+        }
+    }
+}
+
+
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.4'
+    gradleVersion = '3.3'
+}
+
+task deployGMSInt(type: Zip) {
+//    dependsOn artifacts.gmsDataStore
+    from 'src/dist'
+    into('libs') {
+//        from gmsDataStore.archivePath
+//        from configurations.runtime
+    }
+
+}
+
+artifacts {
+//    archives deployGMSInt
 }
 

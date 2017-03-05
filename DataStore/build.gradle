@@ -1,19 +1,12 @@
-apply plugin: 'application'
-apply plugin: 'war'
-
-repositories{
-    flatDir() {
-        dirs "$rootProject.projectDir/DataStore/libs/summit/java"
-    }
-}
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.springframework/spring-context
+    compile group: 'org.springframework', name: 'spring-context', version: '4.3.7.RELEASE'
+
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.7'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.7'
-    // https://mvnrepository.com/artifact/org.springframework/spring-context
-    compile group: 'org.springframework', name: 'spring-context', version: '4.3.7.RELEASE'
 
     compile group: 'org.apache.axis2', name: 'axis2-kernel', version: '1.7.4'
     compile group: 'org.apache.axis2', name: 'axis2-adb', version: '1.7.4'
@@ -47,9 +40,17 @@ dependencies {
 
 }
 
-mainClassName='RestApplication'
 
+task gmsDataStoreJar(type: Jar) {
+    baseName = 'GMS-DataStore'
+    dependsOn classes
+//    from sourceSet.main.output
+    include('com/gms/datasource/*')
+}
 
+artifacts {
+//    gmsDataStore gmsDataStoreJar
+}
 
 
 

@@ -14,8 +14,6 @@ dependencies {
     compile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.2.0'
 
 
-    // https://mvnrepository.com/artifact/org.springframework/spring-test
-    compile group: 'org.springframework', name: 'spring-test', version: '4.3.7.RELEASE'
     // https://mvnrepository.com/artifact/org.springframework/spring-webmvc
     compile group: 'org.springframework', name: 'spring-webmvc', version: '4.3.7.RELEASE'
     // https://mvnrepository.com/artifact/org.springframework/spring-jdbc

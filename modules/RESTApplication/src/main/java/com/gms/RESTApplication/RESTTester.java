@@ -4,7 +4,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.gms.datasource.TradesDAO;
-import summit.etkapi_ws.SU_eToolkitAPIException;
+
+import java.io.IOException;
 
 
 public class RESTTester {
@@ -12,7 +13,13 @@ public class RESTTester {
             ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
 
         TradesDAO trades = appContext.getBean("tradesDAO",TradesDAO.class);
-        
+        try {
+            trades.getTradeIds("");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+
         System.out.println("First Running application.");
         System.out.println(trades.getClass());
     }

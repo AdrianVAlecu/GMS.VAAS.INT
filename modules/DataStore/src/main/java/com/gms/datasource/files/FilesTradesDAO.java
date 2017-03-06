@@ -12,7 +12,7 @@ import com.gms.datasource.TradeId;
 import com.gms.datasource.TradesDAO;
 
 public class FilesTradesDAO implements TradesDAO {
-    	public String getTradeIds(String query) throws IOException, JsonProcessingException{
+    	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where " + query;
@@ -24,7 +24,7 @@ public class FilesTradesDAO implements TradesDAO {
 			tradeIds.add(tradeId);
 
 			ObjectMapper mapper = new ObjectMapper();
-			return mapper.writeValueAsString(tradeIds);
+			return tradeIds;
 		}
 		catch(RuntimeException e)
 		{
@@ -35,7 +35,7 @@ public class FilesTradesDAO implements TradesDAO {
 		}
 	}
 	
-	public String getTrades(String jsonTradeIds) throws IOException, JsonProcessingException{
+	public List<Trade> getTrades(String jsonTradeIds) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeXML from SummitTradeData where TradeType = ? and TradeId = ? and TradeVersion = ?";
@@ -64,7 +64,7 @@ public class FilesTradesDAO implements TradesDAO {
 				}
 			}
 			
-			return mapper.writeValueAsString(trades);
+			return trades;
 		}
 		catch(RuntimeException e)
 		{

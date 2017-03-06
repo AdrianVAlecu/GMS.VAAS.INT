@@ -17,7 +17,7 @@ import com.gms.datasource.TradesDAO;
 public class SummitTradesDAO implements TradesDAO {
     
 	private SU_eToolkitAPI etkAPI;
-	
+
 	public SummitTradesDAO(SU_eToolkitAPI etkAPI, String user, String pass, String application, String type, String dbEnv, String extraParams)  throws SU_eToolkitAPIException, Exception {
         System.out.println("We are using constructor injector injection for SU_eToolkitAPI, user: " + user +
                 " pass: " + pass + " context: " + application + " type: " + type + " dbEnv: " + dbEnv + " extraParams: " + extraParams );
@@ -33,10 +33,11 @@ public class SummitTradesDAO implements TradesDAO {
 
     }
 
-	public String getTradeIds(String query) throws IOException, JsonProcessingException{
+	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
-		String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where " + query;
+		/// String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where " + query;
+		String sql = "SELECT Id, Audit_Version, Audit_Action from dmCUSTOMER where 1=1 " + query;
 		
 		try
 		{
@@ -51,7 +52,7 @@ public class SummitTradesDAO implements TradesDAO {
 				tradeIds.add(tradeId);
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			return mapper.writeValueAsString(tradeIds);
+			return tradeIds;
 		}
 		catch (SU_eToolkitAPIException e)
 		{
@@ -62,24 +63,24 @@ public class SummitTradesDAO implements TradesDAO {
 		}
 	}
 	
-	public String getTrades(String jsonTradeIds) throws IOException, JsonProcessingException{
-		
+	public List<Trade> getTrades(String jsonTradeIds) throws IOException, JsonProcessingException{
+
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
-		
+
 		try
 		{
-			ObjectMapper mapper = new ObjectMapper();	
-			
+			ObjectMapper mapper = new ObjectMapper();
+
 			List<TradeId> tradeIds = mapper.readValue(jsonTradeIds, new TypeReference<List<TradeId>>(){});
 			List<Trade> trades = new Vector<Trade>();
-			
+
 			/// TBDAA - execute this in batchs of 1000
 			for (TradeId tradeId: tradeIds ) {
 
     			StringBuffer outXMLResponse = new StringBuffer();
     			Vector<String> messageList = new Vector<String>();
 
-                String tradeSQL = "SELECT TradeJSON from SummitTradeData where TradeType = " + tradeId.getTradeType() + 
+                String tradeSQL = "SELECT TradeJSON from SummitTradeData where TradeType = " + tradeId.getTradeType() +
                                                     " and TradeId = " + tradeId.getTradeId() +
                                                     " and TradeVersion = " + tradeId.getTradeVersion();
 			    etkAPI.Execute("s_base::DBQuery","<Request><SummitSQL>"+tradeSQL+"</SummitSQL></Request>",outXMLResponse, messageList);
@@ -90,14 +91,14 @@ public class SummitTradesDAO implements TradesDAO {
 					trades.add(trade);
 				}
 			}
-			
-			return mapper.writeValueAsString(trades);
+
+			return trades;
 		}
 		catch (SU_eToolkitAPIException e)
 		{
 			throw new RuntimeException(e);
 		}
-		finally 
+		finally
 		{
 		}
 

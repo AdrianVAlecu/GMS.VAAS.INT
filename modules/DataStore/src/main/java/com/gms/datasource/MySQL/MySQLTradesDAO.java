@@ -24,7 +24,7 @@ public class MySQLTradesDAO implements TradesDAO{
 	
 	private DataSource dataSource;
 	
-	public String getTradeIds(String query) throws IOException, JsonProcessingException{
+	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where ?";
@@ -48,7 +48,7 @@ public class MySQLTradesDAO implements TradesDAO{
 			ps.close();
 		
 			ObjectMapper mapper = new ObjectMapper();
-			return mapper.writeValueAsString(tradeIds);
+			return tradeIds;
 		}
 		catch (SQLException e)
 		{
@@ -64,7 +64,7 @@ public class MySQLTradesDAO implements TradesDAO{
 		}
 	}
 	
-	public String getTrades(String jsonTradeIds) throws IOException, JsonProcessingException{
+	public List<Trade> getTrades(String jsonTradeIds) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeXML from SummitTradeData where TradeType = ? and TradeId = ? and TradeVersion = ?";
@@ -97,7 +97,7 @@ public class MySQLTradesDAO implements TradesDAO{
 			
 			}
 			
-			return mapper.writeValueAsString(trades);
+			return trades;
 		}
 		catch (SQLException e)
 		{

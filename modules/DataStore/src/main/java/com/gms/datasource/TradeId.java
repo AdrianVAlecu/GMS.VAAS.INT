@@ -9,6 +9,12 @@ public class TradeId {
 	String TradeId;
 	int TradeVersion;
 
+	public TradeId()
+	{
+		TradeType = "";
+		TradeId = "";
+		TradeVersion = 0;
+	}
 	public TradeId(String tradeType, String tradeId, int tradeVersion)
 	{
 		TradeType = tradeType;

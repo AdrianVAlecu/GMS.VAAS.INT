@@ -1,9 +1,19 @@
 package com.gms.datasource.summit;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import summit.etkapi_ws.SU_eToolkitAPI;
 import summit.etkapi_ws.SU_eToolkitAPIException;
 
@@ -14,41 +24,32 @@ import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
 import com.gms.datasource.TradesDAO;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 public class SummitTradesDAO implements TradesDAO {
     
-	private SU_eToolkitAPI etkAPI;
+	private EToolKitWrapper etkWrap;
 
-	public SummitTradesDAO(SU_eToolkitAPI etkAPI, String user, String pass, String application, String type, String dbEnv, String extraParams)  throws SU_eToolkitAPIException, Exception {
-        System.out.println("We are using constructor injector injection for SU_eToolkitAPI, user: " + user +
-                " pass: " + pass + " context: " + application + " type: " + type + " dbEnv: " + dbEnv + " extraParams: " + extraParams );
-        this.etkAPI = etkAPI;
-        try
-		{
-        	this.etkAPI.Connect(user, pass, application, type, dbEnv, extraParams);
-		}
-		catch(SU_eToolkitAPIException e)
-		{
-			System.out.print(e.GetMsg());
-		}
-
+	public SummitTradesDAO(EToolKitWrapper etkWrap) {
+        this.etkWrap = etkWrap;
     }
 
 	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		/// String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where " + query;
-		String sql = "SELECT Id, Audit_Version, Audit_Action from dmCUSTOMER where 1=1 " + query;
+		String sql = "SELECT TradeId, dmOwnerTable, Audit_Version from dmENV where Audit_Current = 'Y' " + query;
 		
 		try
 		{
 			List<TradeId> tradeIds = new Vector<TradeId>();
-			StringBuffer outXMLResponse = new StringBuffer();
-			Vector<String> messageList = new Vector<String>();
-			
-			etkAPI.Execute("s_base::DBQuery","<Request><SummitSQL>"+sql+"</SummitSQL></Request>",outXMLResponse, messageList);
-			//while(rs.next())
-			{
-				TradeId tradeId = new TradeId("TradeType","TradeId",1);
+
+			List<List<String>> queryResult = etkWrap.executeDBQuery(sql);
+
+			for ( List<String> row : queryResult ){
+				TradeId tradeId = new TradeId(row.get(0),row.get(1),Integer.parseInt(row.get(2)));
 				tradeIds.add(tradeId);
 			}
 			ObjectMapper mapper = new ObjectMapper();
@@ -83,7 +84,7 @@ public class SummitTradesDAO implements TradesDAO {
                 String tradeSQL = "SELECT TradeJSON from SummitTradeData where TradeType = " + tradeId.getTradeType() +
                                                     " and TradeId = " + tradeId.getTradeId() +
                                                     " and TradeVersion = " + tradeId.getTradeVersion();
-			    etkAPI.Execute("s_base::DBQuery","<Request><SummitSQL>"+tradeSQL+"</SummitSQL></Request>",outXMLResponse, messageList);
+			    etkWrap.executeDBQuery("<Request><SummitSQL>"+tradeSQL+"</SummitSQL></Request>");
 
 				//while(rs.next())
 				{

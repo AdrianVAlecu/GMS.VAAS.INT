@@ -49,7 +49,7 @@ public class SummitTradesDAO implements TradesDAO {
 			List<List<String>> queryResult = etkWrap.executeDBQuery(sql);
 
 			for ( List<String> row : queryResult ){
-				TradeId tradeId = new TradeId(row.get(0),row.get(1),Integer.parseInt(row.get(2)));
+				TradeId tradeId = new TradeId(row.get(1),row.get(0),Integer.parseInt(row.get(2)));
 				tradeIds.add(tradeId);
 			}
 			ObjectMapper mapper = new ObjectMapper();
@@ -78,6 +78,7 @@ public class SummitTradesDAO implements TradesDAO {
 			/// TBDAA - execute this in batchs of 1000
 			for (TradeId tradeId: tradeIds ) {
 
+				etkWrap.executeEntityCreate(tradeId.getTradeType());
     			StringBuffer outXMLResponse = new StringBuffer();
     			Vector<String> messageList = new Vector<String>();
 

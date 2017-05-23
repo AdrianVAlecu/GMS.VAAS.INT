@@ -106,31 +106,30 @@ public class EToolKitWrapper {
             throw e;
         }
 
-        List<List<String>> queryResult = new ArrayList<List<String>>();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        //try {
-        String response = outXMLResponse.toString();
+        entities.put(entity, stripResonseStr(outXMLResponse.toString()));
+
+        return entities.get(entity);
+    }
+
+    String executeEntityRead(String entity) throws SU_eToolkitAPIException {
+        StringBuffer outXMLResponse = new StringBuffer();
+        Vector<String> messageList = new Vector<String>();
+
+        try {
+            etkAPI.Execute("s_base::EntityRead", "<Request>" + entity + "</Request>", outXMLResponse, messageList);
+        }catch (SU_eToolkitAPIException e){
+            e.printStackTrace();
+            throw e;
+        }
+
+        return stripResonseStr(outXMLResponse.toString());
+    }
+
+    String stripResonseStr(String response){
         StringBuffer entityStr = new StringBuffer(response);
         entityStr.replace(response.indexOf("</Response>"), response.indexOf("</Response>") + "</Response>".length(), "");
         entityStr.replace(response.indexOf("<Response>"), response.indexOf("<Response>") + "<Response>".length(), "");
-            //DocumentBuilder builder = factory.newDocumentBuilder();
-            //Document doc = builder.parse(new InputSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + outXMLResponse.toString())));
-            //NodeList entityList = doc.getElementsByTagName("Entity");
-            //Node elem = entityList.item(0);//Your Node
-            //StringWriter buf = new StringWriter();
-            //Transformer xform = TransformerFactory.newInstance().newTransformer();
-            //xform.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            //xform.setOutputProperty(OutputKeys.INDENT, "yes");
-            //xform.transform(new DOMSource(elem), new StreamResult(buf));
-            //String entityStr = buf.toString(); // your string
-
-        entities.put(entity, entityStr.toString());
-
-        //}catch(ParserConfigurationException | SAXException | IOException | TransformerException e){
-        //    e.printStackTrace();
-        //}
-
-        return entities.get(entity);
+        return entityStr.toString();
     }
 
 }

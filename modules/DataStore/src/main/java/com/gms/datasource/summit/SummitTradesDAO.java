@@ -78,7 +78,16 @@ public class SummitTradesDAO implements TradesDAO {
 			/// TBDAA - execute this in batchs of 1000
 			for (TradeId tradeId: tradeIds ) {
 
-				etkWrap.executeEntityCreate(tradeId.getTradeType());
+				String entity = etkWrap.executeEntityCreate(tradeId.getTradeType());
+				entity = entity.replace("<TradeId/>", "<TradeId>" + tradeId.getTradeId() + "</TradeId>");
+				String trade = etkWrap.executeEntityRead(entity);
+
+				XmlMapper xmlMapper = new XmlMapper();
+				JsonNode node = xmlMapper.readTree(trade.getBytes());
+
+				ObjectMapper jsonMapper = new ObjectMapper();
+				String jsonTrade = jsonMapper.writeValueAsString(node);
+
     			StringBuffer outXMLResponse = new StringBuffer();
     			Vector<String> messageList = new Vector<String>();
 
@@ -87,11 +96,6 @@ public class SummitTradesDAO implements TradesDAO {
                                                     " and TradeVersion = " + tradeId.getTradeVersion();
 			    etkWrap.executeDBQuery("<Request><SummitSQL>"+tradeSQL+"</SummitSQL></Request>");
 
-				//while(rs.next())
-				{
-					Trade trade = new Trade(tradeId, "TradeJSON");
-					trades.add(trade);
-				}
 			}
 
 			return trades;

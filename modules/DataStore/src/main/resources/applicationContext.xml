@@ -6,22 +6,39 @@
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context 
     http://www.springframework.org/schema/context/spring-context.xsd">
-    
+
+    <bean id="taskExecutor"
+                class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="5" />
+        <property name="maxPoolSize" value="10" />
+        <property name="queueCapacity" value="50000" />
+        <property name="waitForTasksToCompleteOnShutdown" value="true" />
+    </bean>
+
     <!-- <bean name="tradesDAO" class="com.gms.datasource.files.FilesTradesDAO"> -->
-    <bean name="etkAPI" class="summit.etkapi_ws.SU_eToolkitAPI_Impl" />
+    <bean name="etkImpl"            class="summit.etkapi_ws.SU_eToolkitAPI_Impl" />
+    <bean name="etkAPI"             class="com.gms.datasource.summit.etkAPI_ws" >
+        <property name="etkAPIClass"    ref="etkImpl" />
+        <property name="user"           value="${summitEser}" />
+        <property name="pass"           value="${summitPass}" />
+        <property name="application"    value="${summitApplication}" />
+        <property name="type"           value="${summitType}" />
+        <property name="dbEnv"          value="${summitDbEnv}" />
+        <property name="extraParams"    value="${summitExtraParams}" />
+        <property name="maxCallsPerInstance" value="${summitMaxCallsPerInstance}"
+    </bean>
+    <bean id="etkQueue"                class="java.util.concurrent.LinkedBlockingQueue" />
 
     <bean name="etkWrap" class="com.gms.datasource.summit.EToolKitWrapper" destroy-method="Disconnect">
-        <constructor-arg index="0" ref="etkAPI" />
-        <constructor-arg index="1" value="${summitUser}" />
-        <constructor-arg index="2" value="${summitPass}" />
-        <constructor-arg index="3" value="${summitApplication}" />
-        <constructor-arg index="4" value="${summitType}" />
-        <constructor-arg index="5" value="${summitDbEnv}" />
-        <constructor-arg index="6" value="${summitExtraParams}" />
+        <constructor-arg index="0" ref="etkQueue" />
+        <constructor-arg index="1" value="4" />
+        <constructor-arg index="2" ref="etkAPI" />
+        <constructor-arg index="3" ref="taskExecutor" />
     </bean>
 
     <bean name="tradesDAO" class="com.gms.datasource.summit.SummitTradesDAO">
         <constructor-arg index="0" ref="etkWrap" />
+        <constructor-arg index="1" value="${documentPath}" />
     </bean>
     
     <context:annotation-config />

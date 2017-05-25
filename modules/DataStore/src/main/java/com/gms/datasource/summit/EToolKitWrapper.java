@@ -1,5 +1,7 @@
 package com.gms.datasource.summit;
 
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -18,45 +20,50 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EToolKitWrapper {
-	private SU_eToolkitAPI etkAPI;
-	private Map<String, String> entities;
+	private LinkedBlockingQueue<etkAPI_ws> etkQueue;
+    private etkAPI_ws etkAPI;
+    private ThreadPoolTaskExecutor taskExecutor;
 
-	public EToolKitWrapper(SU_eToolkitAPI etkAPI, String user, String pass, String application, String type, String dbEnv, String extraParams)  throws SU_eToolkitAPIException, Exception {
-        System.out.println("We are using constructor injector injection for SU_eToolkitAPI, user: " + user +
-                " pass: " + pass + " context: " + application + " type: " + type + " dbEnv: " + dbEnv + " extraParams: " + extraParams );
-        this.etkAPI = etkAPI;
+    private Map<String, String> entities;
+    private AtomicInteger totalCalls;
+
+	public EToolKitWrapper(LinkedBlockingQueue<etkAPI_ws> etkQueue, int queueSize, etkAPI_ws etkAPI, ThreadPoolTaskExecutor taskExecutor)  throws SU_eToolkitAPIException, Exception {
         entities = new HashMap<String, String>();
-        try
-        {
-            this.etkAPI.Connect(user, pass, application, type, dbEnv, extraParams);
-        }
-        catch(SU_eToolkitAPIException e)
-        {
-            System.out.print(e.GetMsg());
+        this.etkQueue = etkQueue;
+        this.etkAPI = etkAPI;
+        this.taskExecutor = taskExecutor;
+        totalCalls = new AtomicInteger(0);
+
+        for ( int i = 0 ; i < queueSize ; i ++ ) {
+            this.etkQueue.put(new etkAPI_ws(this.etkAPI));
         }
     }
 
     public void Disconnect(){
-        try {
-            if (this.etkAPI != null ) {
-                this.etkAPI.Disconnect();
-            }
-        }catch(SU_eToolkitAPIException e){
-            e.printStackTrace();
+        for (Iterator<etkAPI_ws> it = this.etkQueue.iterator(); it.hasNext(); ) {
+            it.next().Disconnect();
         }
-
     }
 
-    List<List<String>> executeDBQuery(String sql) throws SU_eToolkitAPIException{
-        StringBuffer outXMLResponse = new StringBuffer();
-        Vector<String> messageList = new Vector<String>();
-
+    List<List<String>> executeDBQuery(String sql) throws SU_eToolkitAPIException, InterruptedException {
+        String response = "";
         try {
-            etkAPI.Execute("s_base::DBQuery", "<Request><SummitSQL>" + sql + "</SummitSQL></Request>", outXMLResponse, messageList);
+            etkAPI_ws etkAPI = etkQueue.take();
+            response = etkAPI.execute("s_base::DBQuery", "<SummitSQL>" + sql + "</SummitSQL>");
+            etkQueue.put(etkAPI);
         }catch (SU_eToolkitAPIException e){
+            e.printStackTrace();
+            throw e;
+        } catch (InterruptedException e) {
             e.printStackTrace();
             throw e;
         }
@@ -65,7 +72,7 @@ public class EToolKitWrapper {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new InputSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + outXMLResponse.toString())));
+            Document doc = builder.parse(new InputSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + response)));
             NodeList dataList = doc.getElementsByTagName("rs:data");
             if (dataList.getLength() > 0 ){
                 Node data = dataList.item(0);
@@ -90,46 +97,95 @@ public class EToolKitWrapper {
         return queryResult;
     }
 
-    String executeEntityCreate(String entity) throws SU_eToolkitAPIException{
+    String executeEntityCreate(String entity) throws SU_eToolkitAPIException, InterruptedException {
 
         if ( entities.containsKey(entity) ) {
             return entities.get(entity);
         }
 
-        StringBuffer outXMLResponse = new StringBuffer();
-        Vector<String> messageList = new Vector<String>();
-
         try {
-            etkAPI.Execute("s_base::EntityCreate", "<Request><EntityName>" + entity + "</EntityName></Request>", outXMLResponse, messageList);
+            etkAPI_ws etkAPI = etkQueue.take();
+            String response = etkAPI.execute("s_base::EntityCreate", "<EntityName>" + entity + "</EntityName>");
+            entities.put(entity, stripResonseStr(response));
+            etkQueue.put(etkAPI);
         }catch (SU_eToolkitAPIException e){
+            e.printStackTrace();
+            throw e;
+        } catch (InterruptedException e) {
             e.printStackTrace();
             throw e;
         }
 
-        entities.put(entity, stripResonseStr(outXMLResponse.toString()));
 
         return entities.get(entity);
     }
 
-    String executeEntityRead(String entity) throws SU_eToolkitAPIException {
-        StringBuffer outXMLResponse = new StringBuffer();
-        Vector<String> messageList = new Vector<String>();
+    String executeEntityRead(String entity) throws SU_eToolkitAPIException, InterruptedException {
 
         try {
-            etkAPI.Execute("s_base::EntityRead", "<Request>" + entity + "</Request>", outXMLResponse, messageList);
+            etkAPI_ws etkAPI = etkQueue.take();
+            String response = etkAPI.execute("s_base::EntityRead", entity );
+            etkQueue.put(etkAPI);
+            return stripResonseStr(response);
         }catch (SU_eToolkitAPIException e){
+            e.printStackTrace();
+            throw e;
+        } catch (InterruptedException e) {
             e.printStackTrace();
             throw e;
         }
 
-        return stripResonseStr(outXMLResponse.toString());
     }
 
-    String stripResonseStr(String response){
+    Vector<String> execute(String function, Vector<String> entities) throws SU_eToolkitAPIException {
+        List<Future<String>> futureList = new ArrayList<>();
+        for(String entity : entities){
+            etkExecutor callableTask = new etkExecutor(function, entity);
+            Future<String> result = taskExecutor.submit(callableTask);
+            futureList.add(result);
+        }
+        Vector<String> results = new Vector<>();
+        for(Future<String> future: futureList){
+            try {
+                results.add(stripResonseStr(future.get()));
+            } catch (Exception e){}
+        }
+
+
+        return results;
+    }
+
+    private String stripResonseStr(String response){
         StringBuffer entityStr = new StringBuffer(response);
         entityStr.replace(response.indexOf("</Response>"), response.indexOf("</Response>") + "</Response>".length(), "");
         entityStr.replace(response.indexOf("<Response>"), response.indexOf("<Response>") + "<Response>".length(), "");
         return entityStr.toString();
     }
 
+    private class etkExecutor implements Callable<String> {
+        String function;
+        String inXML;
+        public etkExecutor(String function, String inXML) {
+            this.function = function;
+            this.inXML = inXML;
+        }
+
+        @Override
+        public String call() throws Exception {
+            StringBuffer outXMLResponse = new StringBuffer();
+            Vector<String> messageList = new Vector<String>();
+
+            try {
+                etkAPI_ws etkAPI = etkQueue.take();
+                String response = etkAPI.execute(function, inXML );
+                etkQueue.put(etkAPI);
+                System.out.println("Totat ETK calls: " + totalCalls.incrementAndGet());
+                return response;
+            }catch (SU_eToolkitAPIException e){
+                e.printStackTrace();
+                throw e;
+            }
+        }
+
+    }
 }

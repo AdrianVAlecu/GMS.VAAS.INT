@@ -1,16 +1,14 @@
 package com.gms.datasource.summit;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.io.IOException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -31,9 +29,11 @@ import javax.xml.parsers.ParserConfigurationException;
 public class SummitTradesDAO implements TradesDAO {
     
 	private EToolKitWrapper etkWrap;
+	private String documentPath;
 
-	public SummitTradesDAO(EToolKitWrapper etkWrap) {
+	public SummitTradesDAO(EToolKitWrapper etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
+        this.documentPath = documentPath;
     }
 
 	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
@@ -55,7 +55,7 @@ public class SummitTradesDAO implements TradesDAO {
 			ObjectMapper mapper = new ObjectMapper();
 			return tradeIds;
 		}
-		catch (SU_eToolkitAPIException e)
+		catch (SU_eToolkitAPIException | InterruptedException e)
 		{
 			throw new RuntimeException(e);
 		}
@@ -75,6 +75,31 @@ public class SummitTradesDAO implements TradesDAO {
 			List<TradeId> tradeIds = mapper.readValue(jsonTradeIds, new TypeReference<List<TradeId>>(){});
 			List<Trade> trades = new Vector<Trade>();
 
+			Vector<String> entities = new Vector<>();
+
+			for (TradeId tradeId: tradeIds ) {
+				String entity = etkWrap.executeEntityCreate(tradeId.getTradeType());
+				entity = entity.replace("<TradeId/>", "<TradeId>" + tradeId.getTradeId() + "</TradeId>");
+				entities.add(entity);
+			}
+			Vector<String> tradesStr = etkWrap.execute("s_base::EntityRead", entities );
+			int index = 0;
+			for (TradeId tradeId: tradeIds ) {
+				String tradeStr = tradesStr.get(index);
+				index ++;
+
+				XmlMapper xmlMapper = new XmlMapper();
+
+				JsonNode node = xmlMapper.readTree(tradeStr.getBytes());
+
+				ObjectMapper jsonMapper = new ObjectMapper();
+				String jsonTrade = jsonMapper.writeValueAsString(node);
+				String fileName = documentPath + "/" + tradeId.getTradeType() + "_" + tradeId.getTradeId() + "_" + tradeId.getTradeVersion() + ".json";
+				File jsonFile = new File(fileName);
+				System.out.println("Trying to write file to disk: " + jsonFile.getCanonicalPath());
+				FileUtils.writeStringToFile(new File(fileName), jsonTrade);
+			}
+
 			/// TBDAA - execute this in batchs of 1000
 			for (TradeId tradeId: tradeIds ) {
 
@@ -87,20 +112,15 @@ public class SummitTradesDAO implements TradesDAO {
 
 				ObjectMapper jsonMapper = new ObjectMapper();
 				String jsonTrade = jsonMapper.writeValueAsString(node);
-
-    			StringBuffer outXMLResponse = new StringBuffer();
-    			Vector<String> messageList = new Vector<String>();
-
-                String tradeSQL = "SELECT TradeJSON from SummitTradeData where TradeType = " + tradeId.getTradeType() +
-                                                    " and TradeId = " + tradeId.getTradeId() +
-                                                    " and TradeVersion = " + tradeId.getTradeVersion();
-			    etkWrap.executeDBQuery("<Request><SummitSQL>"+tradeSQL+"</SummitSQL></Request>");
-
+				String fileName = documentPath + "/" + tradeId.getTradeType() + "_" + tradeId.getTradeId() + "_" + tradeId.getTradeVersion() + ".json";
+				File jsonFile = new File(fileName);
+				System.out.println("Trying to write file to disk: " + jsonFile.getCanonicalPath());
+				FileUtils.writeStringToFile(new File(fileName), jsonTrade);
 			}
 
 			return trades;
 		}
-		catch (SU_eToolkitAPIException e)
+		catch (SU_eToolkitAPIException | InterruptedException e)
 		{
 			throw new RuntimeException(e);
 		}

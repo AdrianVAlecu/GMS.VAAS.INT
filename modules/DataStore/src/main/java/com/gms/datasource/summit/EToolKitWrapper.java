@@ -52,6 +52,7 @@ public class EToolKitWrapper {
         for (Iterator<etkAPI_ws> it = this.etkQueue.iterator(); it.hasNext(); ) {
             it.next().Disconnect();
         }
+        this.etkQueue.clear();
     }
 
     List<List<String>> executeDBQuery(String sql) throws SU_eToolkitAPIException, InterruptedException {
@@ -139,16 +140,31 @@ public class EToolKitWrapper {
 
     Vector<String> execute(String function, Vector<String> entities) throws SU_eToolkitAPIException {
         List<Future<String>> futureList = new ArrayList<>();
-        for(String entity : entities){
-            etkExecutor callableTask = new etkExecutor(function, entity);
-            Future<String> result = taskExecutor.submit(callableTask);
-            futureList.add(result);
-        }
         Vector<String> results = new Vector<>();
-        for(Future<String> future: futureList){
-            try {
+
+        int maxItems = 500;
+        int items = 0;
+        try {
+
+            for(String entity : entities) {
+                etkExecutor callableTask = new etkExecutor(function, entity);
+                Future<String> result = taskExecutor.submit(callableTask);
+                futureList.add(result);
+                items++;
+                if (items > maxItems) {
+                    for (Future<String> future : futureList) {
+                        results.add(stripResonseStr(future.get()));
+                    }
+                    futureList.clear();
+                    items = 0;
+                }
+            }
+            for (Future<String> future : futureList) {
                 results.add(stripResonseStr(future.get()));
-            } catch (Exception e){}
+            }
+            futureList.clear();
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
 

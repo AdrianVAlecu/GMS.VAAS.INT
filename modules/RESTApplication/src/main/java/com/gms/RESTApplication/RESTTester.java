@@ -24,7 +24,7 @@ public class RESTTester {
 
         TradesDAO trades = appContext.getBean("tradesDAO",TradesDAO.class);
         try {
-            List<TradeId> tradeIdList = trades.getTradeIds("");
+            List<TradeId> tradeIdList = trades.getTradeIds(" and dmOwnerTable = 'MM'");
             ObjectMapper mapper = new ObjectMapper();
             String tradeIdsJson = mapper.writeValueAsString(tradeIdList);
             List<Trade> tradesList = trades.getTrades(tradeIdsJson);

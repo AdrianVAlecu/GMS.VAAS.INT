@@ -19,19 +19,20 @@
     <bean name="etkImpl"            class="summit.etkapi_ws.SU_eToolkitAPI_Impl" />
     <bean name="etkAPI"             class="com.gms.datasource.summit.etkAPI_ws" >
         <property name="etkAPIClass"    ref="etkImpl" />
-        <property name="user"           value="${summitEser}" />
+        <property name="user"           value="${summitUser}" />
         <property name="pass"           value="${summitPass}" />
         <property name="application"    value="${summitApplication}" />
         <property name="type"           value="${summitType}" />
         <property name="dbEnv"          value="${summitDbEnv}" />
         <property name="extraParams"    value="${summitExtraParams}" />
-        <property name="maxCallsPerInstance" value="${summitMaxCallsPerInstance}"
+        <property name="maxCallsPerInstance" value="${summitMaxCallsPerInstance}" />
     </bean>
+
     <bean id="etkQueue"                class="java.util.concurrent.LinkedBlockingQueue" />
 
     <bean name="etkWrap" class="com.gms.datasource.summit.EToolKitWrapper" destroy-method="Disconnect">
         <constructor-arg index="0" ref="etkQueue" />
-        <constructor-arg index="1" value="4" />
+        <constructor-arg index="1" value="6" />
         <constructor-arg index="2" ref="etkAPI" />
         <constructor-arg index="3" ref="taskExecutor" />
     </bean>

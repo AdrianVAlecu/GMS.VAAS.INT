@@ -1,10 +1,7 @@
 package com.gms.datasource.summit;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -82,33 +79,15 @@ public class SummitTradesDAO implements TradesDAO {
 				entity = entity.replace("<TradeId/>", "<TradeId>" + tradeId.getTradeId() + "</TradeId>");
 				entities.add(entity);
 			}
-			Vector<String> tradesStr = etkWrap.execute("s_base::EntityRead", entities );
+			Vector<String> tradesStr = etkWrap.execute("s_base::EntityRead", entities);
 			int index = 0;
-			for (TradeId tradeId: tradeIds ) {
+			for (TradeId tradeId : tradeIds) {
 				String tradeStr = tradesStr.get(index);
-				index ++;
+				index++;
 
 				XmlMapper xmlMapper = new XmlMapper();
 
 				JsonNode node = xmlMapper.readTree(tradeStr.getBytes());
-
-				ObjectMapper jsonMapper = new ObjectMapper();
-				String jsonTrade = jsonMapper.writeValueAsString(node);
-				String fileName = documentPath + "/" + tradeId.getTradeType() + "_" + tradeId.getTradeId() + "_" + tradeId.getTradeVersion() + ".json";
-				File jsonFile = new File(fileName);
-				System.out.println("Trying to write file to disk: " + jsonFile.getCanonicalPath());
-				FileUtils.writeStringToFile(new File(fileName), jsonTrade);
-			}
-
-			/// TBDAA - execute this in batchs of 1000
-			for (TradeId tradeId: tradeIds ) {
-
-				String entity = etkWrap.executeEntityCreate(tradeId.getTradeType());
-				entity = entity.replace("<TradeId/>", "<TradeId>" + tradeId.getTradeId() + "</TradeId>");
-				String trade = etkWrap.executeEntityRead(entity);
-
-				XmlMapper xmlMapper = new XmlMapper();
-				JsonNode node = xmlMapper.readTree(trade.getBytes());
 
 				ObjectMapper jsonMapper = new ObjectMapper();
 				String jsonTrade = jsonMapper.writeValueAsString(node);

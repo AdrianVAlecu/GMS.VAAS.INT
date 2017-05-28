@@ -23,6 +23,9 @@ import com.gms.datasource.TradesDAO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 public class SummitTradesDAO implements TradesDAO {
     
@@ -89,8 +92,19 @@ public class SummitTradesDAO implements TradesDAO {
 				String tradeStr = tradesStr.get(index);
 				index++;
 
+				Source tradeSource = new StreamSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + tradeStr));
+
+				StreamSource xslt = new StreamSource(tradeId.getTradeType()+"_Stylesheet.xsl");
+				TransformerFactory transFactory = TransformerFactory.newInstance();
+				Transformer transformer = transFactory.newTransformer(xslt);
+				StringWriter resultWriter = new StringWriter();
+				StreamResult result = new StreamResult(resultWriter);
+				transformer.transform(tradeSource, result);
+				String tradeStrTransf = resultWriter.toString();
+
+
 				XmlMapper xmlMapper = new XmlMapper();
-				JsonNode node = xmlMapper.readTree(tradeStr.getBytes());
+				JsonNode node = xmlMapper.readTree(tradeStrTransf.getBytes());
 				String jsonTrade = jsonMapper.writeValueAsString(node);
 
 				String fileName = documentPath + "/" + tradeId.getTradeType() + "_" + tradeId.getTradeId() + "_" + tradeId.getTradeVersion() + ".json";
@@ -101,8 +115,10 @@ public class SummitTradesDAO implements TradesDAO {
 
 			return trades;
 		}
-		catch (SU_eToolkitAPIException | InterruptedException e)
-		{
+		catch (SU_eToolkitAPIException | InterruptedException e){
+			throw new RuntimeException(e);
+		}catch(IOException | TransformerException e){
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 		finally

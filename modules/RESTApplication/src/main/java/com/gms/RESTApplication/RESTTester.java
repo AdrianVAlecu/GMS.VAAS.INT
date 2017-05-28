@@ -30,9 +30,10 @@ public class RESTTester {
             String tradeIdsJson = mapper.writeValueAsString(tradeIdList);
             List<Trade> tradesList = trades.getTrades(tradeIdsJson);
 
-        }catch (IOException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
+
 
         ThreadPoolTaskExecutor taskExecutor = appContext.getBean("taskExecutor",ThreadPoolTaskExecutor.class);
         taskExecutor.shutdown();

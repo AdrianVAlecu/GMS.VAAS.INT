@@ -8,6 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.gms.datasource.TradesDAO;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +25,7 @@ public class RESTTester {
 
         TradesDAO trades = appContext.getBean("tradesDAO",TradesDAO.class);
         try {
-            List<TradeId> tradeIdList = trades.getTradeIds(" and dmOwnerTable = 'MM'");
+            List<TradeId> tradeIdList = trades.getTradeIds(" and dmOwnerTable in ('MM', 'SWAP', 'MUST_TR')");
             ObjectMapper mapper = new ObjectMapper();
             String tradeIdsJson = mapper.writeValueAsString(tradeIdList);
             List<Trade> tradesList = trades.getTrades(tradeIdsJson);
@@ -32,6 +33,9 @@ public class RESTTester {
         }catch (IOException e){
             e.printStackTrace();
         }
+
+        ThreadPoolTaskExecutor taskExecutor = appContext.getBean("taskExecutor",ThreadPoolTaskExecutor.class);
+        taskExecutor.shutdown();
 
 
         System.out.println("First Running application.");

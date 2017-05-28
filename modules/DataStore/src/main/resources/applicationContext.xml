@@ -41,7 +41,12 @@
         <constructor-arg index="0" ref="etkWrap" />
         <constructor-arg index="1" value="${documentPath}" />
     </bean>
-    
+
+    <bean name="asOfDates" class="com.gms.datasource.summit.SummitAsOfDatesDAO">
+        <constructor-arg index="0" ref="etkWrap" />
+        <constructor-arg index="1" value="${documentPath}" />
+    </bean>
+
     <context:annotation-config />
     <context:component-scan base-package="com.gms.datasource" />
     

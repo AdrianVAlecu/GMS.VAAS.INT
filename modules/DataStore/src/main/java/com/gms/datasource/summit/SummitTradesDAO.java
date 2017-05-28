@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.*;
@@ -81,16 +82,17 @@ public class SummitTradesDAO implements TradesDAO {
 			}
 			Vector<String> tradesStr = etkWrap.execute("s_base::EntityRead", entities);
 			int index = 0;
+			ObjectMapper jsonMapper = new ObjectMapper();
+			jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
 			for (TradeId tradeId : tradeIds) {
 				String tradeStr = tradesStr.get(index);
 				index++;
 
 				XmlMapper xmlMapper = new XmlMapper();
-
 				JsonNode node = xmlMapper.readTree(tradeStr.getBytes());
-
-				ObjectMapper jsonMapper = new ObjectMapper();
 				String jsonTrade = jsonMapper.writeValueAsString(node);
+
 				String fileName = documentPath + "/" + tradeId.getTradeType() + "_" + tradeId.getTradeId() + "_" + tradeId.getTradeVersion() + ".json";
 				File jsonFile = new File(fileName);
 				System.out.println("Trying to write file to disk: " + jsonFile.getCanonicalPath());

@@ -1,14 +1,16 @@
 package com.gms.datasource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * @author GMS
  *
  */
 public class Trade {
 	TradeId tradeId;
-	String tradeJSON;
+	JsonNode tradeJSON;
 
-	public Trade(TradeId tradeId, String tradeJSON)
+	public Trade(TradeId tradeId, JsonNode tradeJSON)
 	{
 		this.tradeId = tradeId;
 		this.tradeJSON = tradeJSON;
@@ -16,7 +18,7 @@ public class Trade {
 	/**
 	 * @return the trade
 	 */
-	public String getTradeXML() {
+	public JsonNode getTradeXML() {
 		return this.tradeJSON;
 	}
 
@@ -28,10 +30,10 @@ public class Trade {
 	}
 
 	/**
-	 * @param trade
+	 * @param tradeJSON
 	 *            the trade to set
 	 */
-	public void setTradeXML(String tradeJSON) {
+	public void setTradeXML(JsonNode tradeJSON) {
 		this.tradeJSON = tradeJSON;
 	}
 

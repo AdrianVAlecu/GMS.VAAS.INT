@@ -88,15 +88,16 @@ public class SummitTradesDAO implements TradesDAO {
 			ObjectMapper jsonMapper = new ObjectMapper();
 			jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
+			StreamSource xslt = new StreamSource("Stylesheet_EntList.xsl");
+			TransformerFactory transFactory = TransformerFactory.newInstance();
+			Transformer transformer = transFactory.newTransformer(xslt);
+
 			for (TradeId tradeId : tradeIds) {
 				String tradeStr = tradesStr.get(index);
 				index++;
 
 				Source tradeSource = new StreamSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + tradeStr));
 
-				StreamSource xslt = new StreamSource(tradeId.getTradeType()+"_Stylesheet.xsl");
-				TransformerFactory transFactory = TransformerFactory.newInstance();
-				Transformer transformer = transFactory.newTransformer(xslt);
 				StringWriter resultWriter = new StringWriter();
 				StreamResult result = new StreamResult(resultWriter);
 				transformer.transform(tradeSource, result);
@@ -105,6 +106,9 @@ public class SummitTradesDAO implements TradesDAO {
 
 				XmlMapper xmlMapper = new XmlMapper();
 				JsonNode node = xmlMapper.readTree(tradeStrTransf.getBytes());
+				Trade newTrade = new Trade(tradeId, node);
+				trades.add(newTrade);
+
 				String jsonTrade = jsonMapper.writeValueAsString(node);
 
 				String fileName = documentPath + "/" + tradeId.getTradeType() + "_" + tradeId.getTradeId() + "_" + tradeId.getTradeVersion() + ".json";

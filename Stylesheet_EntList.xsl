@@ -1,5 +1,5 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="Identity.xsl"/>
+	<xsl:import href="Stylesheet_Identity.xsl"/>
 	<xsl:template match="//node()[@TYPE = 'EntList']">
 		<xsl:element name="{local-name()}" >
 			<xsl:attribute name="TYPE">EntList</xsl:attribute>

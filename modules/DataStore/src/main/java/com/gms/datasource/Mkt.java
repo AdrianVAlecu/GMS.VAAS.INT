@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by gms on 5/30/2017.
  */
-public class Market {
-    public MarketId mktId;
+public class Mkt {
+    public MktId mktId;
     public List<JsonNode> mkt;
 }

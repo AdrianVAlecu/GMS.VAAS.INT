@@ -18,7 +18,7 @@ public class Trade {
 	/**
 	 * @return the trade
 	 */
-	public JsonNode getTradeXML() {
+	public JsonNode getTradeJSON() {
 		return this.tradeJSON;
 	}
 
@@ -33,7 +33,7 @@ public class Trade {
 	 * @param tradeJSON
 	 *            the trade to set
 	 */
-	public void setTradeXML(JsonNode tradeJSON) {
+	public void setTradeJSON(JsonNode tradeJSON) {
 		this.tradeJSON = tradeJSON;
 	}
 

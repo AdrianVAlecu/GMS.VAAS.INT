@@ -10,6 +10,8 @@ import java.util.Vector;
 
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,19 +66,15 @@ public class MySQLTradesDAO implements TradesDAO{
 		}
 	}
 	
-	public List<Trade> getTrades(String jsonTradeIds) throws IOException, JsonProcessingException{
+	public List<Trade> getTrades(List<TradeId> tradeIds) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
-		String sql = "SELECT TradeXML from SummitTradeData where TradeType = ? and TradeId = ? and TradeVersion = ?";
+		String sql = "SELECT tradeJSON from SummitTradeData where TradeType = ? and TradeId = ? and TradeVersion = ?";
 		
 		Connection conn = null;
 		
 		try
 		{
-			ObjectMapper mapper = new ObjectMapper();	
-			conn = dataSource.getConnection();
-			
-			List<TradeId> tradeIds = mapper.readValue(jsonTradeIds, new TypeReference<List<TradeId>>(){});
 			List<Trade> trades = new Vector<Trade>();
 			
 			/// TBDAA - execute this in batchs of 1000
@@ -87,9 +85,13 @@ public class MySQLTradesDAO implements TradesDAO{
 				ps.setString(2,tradeId.getTradeId());
 				ps.setInt(3,tradeId.getTradeVersion());
 				ResultSet rs = ps.executeQuery();
+				ObjectMapper jsonMapper = new ObjectMapper();
+				jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
 				while(rs.next())
 				{
-					Trade trade = new Trade(tradeId, rs.getString("TradeXML"));
+					JsonNode tradeJson = jsonMapper.readTree(rs.getString("tradeJSON"));
+					Trade trade = new Trade(tradeId, tradeJson);
 					trades.add(trade);
 				}
 				rs.close();

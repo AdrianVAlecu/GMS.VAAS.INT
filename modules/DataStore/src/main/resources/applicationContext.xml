@@ -42,6 +42,11 @@
         <constructor-arg index="1" value="${documentPath}" />
     </bean>
 
+    <bean name="mktsDAO" class="com.gms.datasource.summit.SummitMktsDAO">
+        <constructor-arg index="0" ref="etkWrap" />
+        <constructor-arg index="1" value="${documentPath}" />
+    </bean>
+
     <bean name="asOfDates" class="com.gms.datasource.summit.SummitAsOfDatesDAO">
         <constructor-arg index="0" ref="etkWrap" />
         <constructor-arg index="1" value="${documentPath}" />

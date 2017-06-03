@@ -29,7 +29,7 @@ public class TradesController {
     }
 
     @RequestMapping(value="/trades", method=RequestMethod.GET)
-    public List<Trade> getTrades(@PathVariable String json) throws IOException, JsonProcessingException {
-        return tradesDAO.getTrades(json);
+    public List<Trade> getTrades(@PathVariable List<TradeId> tradeIds) throws IOException, JsonProcessingException {
+        return tradesDAO.getTrades(tradeIds);
     }
 }

@@ -65,15 +65,12 @@ public class SummitTradesDAO implements TradesDAO {
 		}
 	}
 	
-	public List<Trade> getTrades(String jsonTradeIds) throws IOException, JsonProcessingException{
+	public List<Trade> getTrades(List<TradeId> tradeIds) throws IOException, JsonProcessingException{
 
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 
 		try
 		{
-			ObjectMapper mapper = new ObjectMapper();
-
-			List<TradeId> tradeIds = mapper.readValue(jsonTradeIds, new TypeReference<List<TradeId>>(){});
 			List<Trade> trades = new Vector<Trade>();
 
 			Vector<String> entities = new Vector<>();
@@ -118,8 +115,7 @@ public class SummitTradesDAO implements TradesDAO {
 			}
 
 			return trades;
-		}
-		catch (SU_eToolkitAPIException | InterruptedException e){
+		}catch (SU_eToolkitAPIException | InterruptedException e){
 			throw new RuntimeException(e);
 		}catch(IOException | TransformerException e){
 			e.printStackTrace();

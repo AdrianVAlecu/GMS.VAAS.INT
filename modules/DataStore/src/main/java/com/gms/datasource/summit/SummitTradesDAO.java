@@ -4,42 +4,28 @@ import java.io.*;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.io.FileUtils;
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import summit.etkapi_ws.SU_eToolkitAPI;
 import summit.etkapi_ws.SU_eToolkitAPIException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
 import com.gms.datasource.TradesDAO;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
 public class SummitTradesDAO implements TradesDAO {
     
-	private EToolKitWrapper etkWrap;
+	private SWrapEToolKit etkWrap;
 	private String documentPath;
-	private SummitXSLTWrapper sXslt;
-	private SummitJSONWrapper sJson;
+	private SWrapXSLT sXslt;
+	private SWrapJSON sJson;
 
-	public SummitTradesDAO(EToolKitWrapper etkWrap, String documentPath) {
+	public SummitTradesDAO(SWrapEToolKit etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
         this.documentPath = documentPath;
 
-        sXslt = new SummitXSLTWrapper();
-        sJson = new SummitJSONWrapper();
+        sXslt = new SWrapXSLT();
+        sJson = new SWrapJSON();
     }
 
 	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{

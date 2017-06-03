@@ -10,11 +10,11 @@ import java.io.IOException;
 /**
  * Created by gms on 6/3/2017.
  */
-public class SummitJSONWrapper {
+public class SWrapJSON {
     private ObjectMapper jsonMapper;
     XmlMapper xmlMapper;
 
-    public SummitJSONWrapper(){
+    public SWrapJSON(){
         jsonMapper = new ObjectMapper();
         jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
         xmlMapper = new XmlMapper();

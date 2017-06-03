@@ -1,43 +1,24 @@
 package com.gms.datasource.summit;
 
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import summit.etkapi_ws.SU_eToolkitAPI;
 import summit.etkapi_ws.SU_eToolkitAPIException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class EToolKitWrapper {
-	private LinkedBlockingQueue<etkAPI_ws> etkQueue;
-    private etkAPI_ws etkAPI;
+public class SWrapEToolKit {
+	private LinkedBlockingQueue<SWrapEToolKit_ws> etkQueue;
+    private SWrapEToolKit_ws etkAPI;
     private ThreadPoolTaskExecutor taskExecutor;
 
     private Map<String, String> entities;
     private AtomicInteger totalCalls;
-    SummitDOMWrapper wrapper;
+    SWrapDOM wrapper;
 
-	public EToolKitWrapper(LinkedBlockingQueue<etkAPI_ws> etkQueue, int queueSize, etkAPI_ws etkAPI, ThreadPoolTaskExecutor taskExecutor)  throws SU_eToolkitAPIException, Exception {
+	public SWrapEToolKit(LinkedBlockingQueue<SWrapEToolKit_ws> etkQueue, int queueSize, SWrapEToolKit_ws etkAPI, ThreadPoolTaskExecutor taskExecutor)  throws SU_eToolkitAPIException, Exception {
         entities = new HashMap<String, String>();
         this.etkQueue = etkQueue;
         this.etkAPI = etkAPI;
@@ -45,14 +26,14 @@ public class EToolKitWrapper {
         totalCalls = new AtomicInteger(0);
 
         for ( int i = 0 ; i < queueSize ; i ++ ) {
-            this.etkQueue.put(new etkAPI_ws(this.etkAPI));
+            this.etkQueue.put(new SWrapEToolKit_ws(this.etkAPI));
         }
 
-        wrapper = new SummitDOMWrapper();
+        wrapper = new SWrapDOM();
     }
 
     public void Disconnect(){
-        for (Iterator<etkAPI_ws> it = this.etkQueue.iterator(); it.hasNext(); ) {
+        for (Iterator<SWrapEToolKit_ws> it = this.etkQueue.iterator(); it.hasNext(); ) {
             it.next().Disconnect();
         }
         this.etkQueue.clear();
@@ -61,7 +42,7 @@ public class EToolKitWrapper {
     List<List<String>> executeDBQuery(String sql) throws SU_eToolkitAPIException, InterruptedException {
         String response = "";
         try {
-            etkAPI_ws etkAPI = etkQueue.take();
+            SWrapEToolKit_ws etkAPI = etkQueue.take();
             response = etkAPI.execute("s_base::DBQuery", "<SummitSQL>" + sql + "</SummitSQL>");
             etkQueue.put(etkAPI);
         }catch (SU_eToolkitAPIException e){
@@ -83,7 +64,7 @@ public class EToolKitWrapper {
         }
 
         try {
-            etkAPI_ws etkAPI = etkQueue.take();
+            SWrapEToolKit_ws etkAPI = etkQueue.take();
             String response = etkAPI.execute("s_base::EntityCreate", "<EntityName>" + entity + "</EntityName>");
             entities.put(entity, stripResonseStr(response));
             etkQueue.put(etkAPI);
@@ -102,7 +83,7 @@ public class EToolKitWrapper {
     String executeEntityRead(String entity) throws SU_eToolkitAPIException, InterruptedException {
 
         try {
-            etkAPI_ws etkAPI = etkQueue.take();
+            SWrapEToolKit_ws etkAPI = etkQueue.take();
             String response = etkAPI.execute("s_base::EntityRead", entity );
             etkQueue.put(etkAPI);
             return stripResonseStr(response);
@@ -170,7 +151,7 @@ public class EToolKitWrapper {
             Vector<String> messageList = new Vector<String>();
 
             try {
-                etkAPI_ws etkAPI = etkQueue.take();
+                SWrapEToolKit_ws etkAPI = etkQueue.take();
                 String response = etkAPI.execute(function, inXML );
                 etkQueue.put(etkAPI);
                 System.out.println("Totat ETK calls: " + totalCalls.incrementAndGet());

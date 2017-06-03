@@ -17,7 +17,7 @@
 
     <!-- <bean name="tradesDAO" class="com.gms.datasource.files.FilesTradesDAO"> -->
     <bean name="etkImpl"            class="summit.etkapi_ws.SU_eToolkitAPI_Impl" />
-    <bean name="etkAPI"             class="com.gms.datasource.summit.etkAPI_ws" >
+    <bean name="etkAPI"             class="com.gms.datasource.summit.SWrapEToolKit_ws" >
         <property name="etkAPIClass"    ref="etkImpl" />
         <property name="user"           value="${summitUser}" />
         <property name="pass"           value="${summitPass}" />
@@ -30,7 +30,7 @@
 
     <bean id="etkQueue"                class="java.util.concurrent.LinkedBlockingQueue" />
 
-    <bean name="etkWrap" class="com.gms.datasource.summit.EToolKitWrapper" destroy-method="Disconnect">
+    <bean name="etkWrap" class="com.gms.datasource.summit.SWrapEToolKit" destroy-method="Disconnect">
         <constructor-arg index="0" ref="etkQueue" />
         <constructor-arg index="1" value="6" />
         <constructor-arg index="2" ref="etkAPI" />

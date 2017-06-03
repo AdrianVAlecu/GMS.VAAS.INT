@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Created by gms on 6/3/2017.
  */
-public class SummitDOMWrapper {
+public class SWrapDOM {
     static private DocumentBuilderFactory factory;
     static private DocumentBuilder builder;
     static final String XMLVERSION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>";

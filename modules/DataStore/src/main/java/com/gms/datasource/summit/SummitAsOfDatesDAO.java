@@ -15,10 +15,10 @@ import java.util.Map;
  * Created by gms on 5/27/2017.
  */
 public class SummitAsOfDatesDAO implements AsOfDatesDAO {
-    private EToolKitWrapper etkWrap;
+    private SWrapEToolKit etkWrap;
     public Map<String, String> dates;
 
-    SummitAsOfDatesDAO(EToolKitWrapper etkWrap, String documentPath) throws SU_eToolkitAPIException, InterruptedException {
+    SummitAsOfDatesDAO(SWrapEToolKit etkWrap, String documentPath) throws SU_eToolkitAPIException, InterruptedException {
         this.etkWrap = etkWrap;
         dates = new HashMap<>();
 

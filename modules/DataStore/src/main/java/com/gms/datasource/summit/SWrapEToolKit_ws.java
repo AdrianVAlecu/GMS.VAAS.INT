@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by gms on 5/25/2017.
  */
-public class etkAPI_ws {
+public class SWrapEToolKit_ws {
     private SU_eToolkitAPI etkAPIClass;
 
     private SU_eToolkitAPI etkAPI;
@@ -26,12 +26,12 @@ public class etkAPI_ws {
     private String dbEnv;
     private String extraParams;
 
-    public etkAPI_ws(){
+    public SWrapEToolKit_ws(){
         etkAPIcalls = new AtomicInteger(0);
         maxCallsPerInstance = 100;
     }
 
-    public etkAPI_ws(etkAPI_ws rs){
+    public SWrapEToolKit_ws(SWrapEToolKit_ws rs){
         this.etkAPIClass = rs.etkAPIClass;
         this.etkAPIcalls = new AtomicInteger(0);
         this.maxCallsPerInstance = rs.maxCallsPerInstance;

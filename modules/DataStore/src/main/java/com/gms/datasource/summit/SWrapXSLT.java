@@ -9,11 +9,11 @@ import java.io.StringWriter;
 /**
  * Created by gms on 6/3/2017.
  */
-public class SummitXSLTWrapper {
+public class SWrapXSLT {
     Transformer entListTrans;
     static final String XMLVERSION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>";
 
-    public SummitXSLTWrapper(){
+    public SWrapXSLT(){
         try {
             StreamSource entListXslt = new StreamSource("Stylesheet_EntList.xsl");
             TransformerFactory transFactory = TransformerFactory.newInstance();

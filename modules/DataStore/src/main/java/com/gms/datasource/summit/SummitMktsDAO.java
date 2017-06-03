@@ -1,13 +1,11 @@
 package com.gms.datasource.summit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.*;
 import summit.etkapi_ws.SU_eToolkitAPIException;
 
-import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.util.*;
 
@@ -16,14 +14,14 @@ import java.util.*;
  */
 public class SummitMktsDAO implements MktsDAO {
 
-    private EToolKitWrapper etkWrap;
+    private SWrapEToolKit etkWrap;
     private String documentPath;
-    private SummitDOMWrapper domWrapper;
+    private SWrapDOM domWrapper;
 
-    public SummitMktsDAO(EToolKitWrapper etkWrap, String documentPath) {
+    public SummitMktsDAO(SWrapEToolKit etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
         this.documentPath = documentPath;
-        domWrapper = new SummitDOMWrapper();
+        domWrapper = new SWrapDOM();
     }
 
     @Override

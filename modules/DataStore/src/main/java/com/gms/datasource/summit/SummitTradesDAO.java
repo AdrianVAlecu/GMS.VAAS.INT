@@ -31,10 +31,15 @@ public class SummitTradesDAO implements TradesDAO {
     
 	private EToolKitWrapper etkWrap;
 	private String documentPath;
+	private SummitXSLTWrapper sXslt;
+	private SummitJSONWrapper sJson;
 
 	public SummitTradesDAO(EToolKitWrapper etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
         this.documentPath = documentPath;
+
+        sXslt = new SummitXSLTWrapper();
+        sJson = new SummitJSONWrapper();
     }
 
 	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
@@ -82,31 +87,15 @@ public class SummitTradesDAO implements TradesDAO {
 			}
 			Vector<String> tradesStr = etkWrap.execute("s_base::EntityRead", entities);
 			int index = 0;
-			ObjectMapper jsonMapper = new ObjectMapper();
-			jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-			StreamSource xslt = new StreamSource("Stylesheet_EntList.xsl");
-			TransformerFactory transFactory = TransformerFactory.newInstance();
-			Transformer transformer = transFactory.newTransformer(xslt);
 
 			for (TradeId tradeId : tradeIds) {
 				String tradeStr = tradesStr.get(index);
 				index++;
 
-				Source tradeSource = new StreamSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + tradeStr));
+				JsonNode tradeNode = sJson.readXML(sXslt.applyEntList(tradeStr));
+				trades.add(new Trade(tradeId, tradeNode));
 
-				StringWriter resultWriter = new StringWriter();
-				StreamResult result = new StreamResult(resultWriter);
-				transformer.transform(tradeSource, result);
-				String tradeStrTransf = resultWriter.toString();
-
-
-				XmlMapper xmlMapper = new XmlMapper();
-				JsonNode node = xmlMapper.readTree(tradeStrTransf.getBytes());
-				Trade newTrade = new Trade(tradeId, node);
-				trades.add(newTrade);
-
-				String jsonTrade = jsonMapper.writeValueAsString(node);
+				String jsonTrade = sJson.writeJSON(tradeNode);
 
 				String fileName = documentPath + "/" + tradeId.getTradeType() + "_" + tradeId.getTradeId() + "_" + tradeId.getTradeVersion() + ".json";
 				File jsonFile = new File(fileName);
@@ -117,7 +106,7 @@ public class SummitTradesDAO implements TradesDAO {
 			return trades;
 		}catch (SU_eToolkitAPIException | InterruptedException e){
 			throw new RuntimeException(e);
-		}catch(IOException | TransformerException e){
+		}catch(IOException e){
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}

@@ -13,7 +13,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by gms on 6/3/2017.
@@ -67,4 +69,30 @@ public class SummitDOMWrapper {
 
         return queryResult;
     }
+
+    public Map<String, String> convertZeroResult(String response){
+
+        Map<String, String> queryResult = new HashMap<>();
+
+        try {
+            Document doc = getDocument(XMLVERSION + response);
+
+            NodeList curveDataList = doc.getElementsByTagName("CurveData");
+            if (curveDataList.getLength() > 0 ) {
+                NodeList rows  = curveDataList.item(0).getChildNodes();
+
+                for (int i = 0; i < rows.getLength(); i++) {
+                    NodeList row = rows.item(i).getChildNodes();
+
+                    queryResult.put(row.item(0).getTextContent(),
+                                row.item(1).getTextContent());
+                }
+            }
+        }catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return queryResult;
+    }
+
 }

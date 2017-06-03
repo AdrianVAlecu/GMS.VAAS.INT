@@ -18,10 +18,12 @@ public class SummitMktsDAO implements MktsDAO {
 
     private EToolKitWrapper etkWrap;
     private String documentPath;
+    private SummitDOMWrapper domWrapper;
 
     public SummitMktsDAO(EToolKitWrapper etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
         this.documentPath = documentPath;
+        domWrapper = new SummitDOMWrapper();
     }
 
     @Override
@@ -75,7 +77,14 @@ public class SummitMktsDAO implements MktsDAO {
             for (MktId mktId : mktIds) {
                 entities.add(mktId.getRequest(curveId, asOfDate));
             }
+            int index = 0;
             Vector<String> mktsStr = etkWrap.execute("s_market::GetZeroCurve", entities);
+            for (String mktStr : mktsStr ){
+                Map<String, String> points = domWrapper.convertZeroResult(mktStr);
+                IRMkt mkt = new IRMkt((IRMktId)mktIds.get(index), points);
+                index ++;
+                mkts.add(mkt);
+            }
 
             return mkts;
         }catch (SU_eToolkitAPIException e){

@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.io.FileUtils;
 import summit.etkapi_ws.SU_eToolkitAPIException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,16 +15,16 @@ import com.gms.datasource.TradesDAO;
 public class SummitTradesDAO implements TradesDAO {
     
 	private SWrapEToolKit etkWrap;
-	private String documentPath;
 	private SWrapXSLT sXslt;
 	private SWrapJSON sJson;
+	private SWrapFile sFile;
 
 	public SummitTradesDAO(SWrapEToolKit etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
-        this.documentPath = documentPath;
 
         sXslt = new SWrapXSLT();
         sJson = new SWrapJSON();
+        sFile = new SWrapFile(documentPath);
     }
 
 	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
@@ -56,9 +55,7 @@ public class SummitTradesDAO implements TradesDAO {
 		}
 	}
 	
-	public List<Trade> getTrades(List<TradeId> tradeIds) throws IOException, JsonProcessingException{
-
-		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
+	public List<Trade> getTrades(List<TradeId> tradeIds){
 
 		try
 		{
@@ -81,19 +78,14 @@ public class SummitTradesDAO implements TradesDAO {
 				JsonNode tradeNode = sJson.readXML(sXslt.applyEntList(tradeStr));
 				trades.add(new Trade(tradeId, tradeNode));
 
-				String jsonTrade = sJson.writeJSON(tradeNode);
-
-				String fileName = documentPath + "/" + tradeId.getTradeType() + "_" + tradeId.getTradeId() + "_" + tradeId.getTradeVersion() + ".json";
-				File jsonFile = new File(fileName);
-				System.out.println("Trying to write file to disk: " + jsonFile.getCanonicalPath());
-				FileUtils.writeStringToFile(new File(fileName), jsonTrade);
+				sFile.writeStringToFile(tradeId.getTradeType() + "_" +
+							tradeId.getTradeId() + "_" +
+							tradeId.getTradeVersion() + ".json",
+						sJson.writeJSON(tradeNode));
 			}
 
 			return trades;
 		}catch (SU_eToolkitAPIException | InterruptedException e){
-			throw new RuntimeException(e);
-		}catch(IOException e){
-			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 		finally

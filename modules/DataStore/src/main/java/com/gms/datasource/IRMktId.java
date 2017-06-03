@@ -30,6 +30,9 @@ public class IRMktId extends MktId {
         this.ccy = ccy;
     }
 
+    public String getId(String curveId, String asOf){
+        return "IR_" + curveId + "_" + asOf + "_" + getCcy() + "_" + getIndex();
+    }
 
     public IRMktId(String ccy, String index){
         setClassId("IRMktId");

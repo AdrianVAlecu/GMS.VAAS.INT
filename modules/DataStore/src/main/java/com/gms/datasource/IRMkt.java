@@ -13,4 +13,12 @@ public class IRMkt extends Mkt {
         this.mktId = mktId;
         this.points = points;
     }
+
+    public IRMktId getMktId() {
+        return mktId;
+    }
+
+    public void setMktId(IRMktId mktId) {
+        this.mktId = mktId;
+    }
 }

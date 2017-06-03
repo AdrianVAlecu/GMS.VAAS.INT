@@ -15,13 +15,16 @@ import java.util.*;
 public class SummitMktsDAO implements MktsDAO {
 
     private SWrapEToolKit etkWrap;
-    private String documentPath;
     private SWrapDOM domWrapper;
+    private SWrapJSON sJson;
+    private SWrapFile sFile;
 
     public SummitMktsDAO(SWrapEToolKit etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
-        this.documentPath = documentPath;
+
         domWrapper = new SWrapDOM();
+        sJson = new SWrapJSON();
+        sFile = new SWrapFile(documentPath);
     }
 
     @Override
@@ -46,22 +49,6 @@ public class SummitMktsDAO implements MktsDAO {
         return mktIds;
     }
 
-    public List<MktId> addMkt(List<MktId> mkts, MktId mkt){
-        boolean found = false;
-        for (MktId it : mkts ){
-            if ( it.getRequest("", "").equals(mkt.getRequest("", "")) ){
-                found = true;
-                break;
-            }
-        }
-
-        if ( ! found ) {
-            mkts.add(mkt);
-        }
-
-        return mkts;
-    }
-
     @Override
     public List<Mkt> getMkts(List<MktId> mktIds, String curveId, String asOfDate) throws IOException, JsonProcessingException {
 
@@ -77,11 +64,16 @@ public class SummitMktsDAO implements MktsDAO {
             }
             int index = 0;
             Vector<String> mktsStr = etkWrap.execute("s_market::GetZeroCurve", entities);
-            for (String mktStr : mktsStr ){
-                Map<String, String> points = domWrapper.convertZeroResult(mktStr);
+            for (MktId mktId : mktIds ){
+                String mktStr = mktsStr.get(index);
+                Map<String, String> points = domWrapper.convertZeroResult(mktsStr.get(index));
+
                 IRMkt mkt = new IRMkt((IRMktId)mktIds.get(index), points);
                 index ++;
                 mkts.add(mkt);
+
+                sFile.writeStringToFile(mktId.getId(curveId, asOfDate) + ".json",
+                        sJson.writeJSON(mkt));
             }
 
             return mkts;
@@ -92,5 +84,22 @@ public class SummitMktsDAO implements MktsDAO {
         {
         }
 
+    }
+
+
+    public List<MktId> addMkt(List<MktId> mkts, MktId mkt){
+        boolean found = false;
+        for (MktId it : mkts ){
+            if ( it.getRequest("", "").equals(mkt.getRequest("", "")) ){
+                found = true;
+                break;
+            }
+        }
+
+        if ( ! found ) {
+            mkts.add(mkt);
+        }
+
+        return mkts;
     }
 }

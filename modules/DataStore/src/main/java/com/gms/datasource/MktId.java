@@ -23,4 +23,5 @@ public abstract class MktId {
     }
 
     public abstract String getRequest(String curveId, String asOfDate);
+    public abstract String getId(String id, String asOf);
 }

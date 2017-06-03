@@ -35,6 +35,7 @@ public class EToolKitWrapper {
 
     private Map<String, String> entities;
     private AtomicInteger totalCalls;
+    SummitDOMWrapper wrapper;
 
 	public EToolKitWrapper(LinkedBlockingQueue<etkAPI_ws> etkQueue, int queueSize, etkAPI_ws etkAPI, ThreadPoolTaskExecutor taskExecutor)  throws SU_eToolkitAPIException, Exception {
         entities = new HashMap<String, String>();
@@ -46,6 +47,8 @@ public class EToolKitWrapper {
         for ( int i = 0 ; i < queueSize ; i ++ ) {
             this.etkQueue.put(new etkAPI_ws(this.etkAPI));
         }
+
+        wrapper = new SummitDOMWrapper();
     }
 
     public void Disconnect(){
@@ -69,33 +72,8 @@ public class EToolKitWrapper {
             throw e;
         }
 
-        List<List<String>> queryResult = new ArrayList<List<String>>();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new InputSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" + response)));
-            NodeList dataList = doc.getElementsByTagName("rs:data");
-            if (dataList.getLength() > 0 ){
-                Node data = dataList.item(0);
-                NodeList rows = data.getChildNodes();
-                for ( int i = 0 ; i < rows.getLength() ; i ++ ){
-                    List<String> oneRowResult = new ArrayList<String>();
+        return wrapper.convertQueryResult(response);
 
-                    Node rowsData = rows.item(i);
-                    NamedNodeMap row = rowsData.getAttributes();
-                    for ( int j = 0 ; j < row.getLength() ; j ++ ) {
-                        Node rowItem = row.item(j);
-                        oneRowResult.add(rowItem.getNodeValue());
-                    }
-                    queryResult.add(oneRowResult);
-                }
-            }
-
-        }catch(ParserConfigurationException | SAXException | IOException e){
-            e.printStackTrace();
-        }
-
-        return queryResult;
     }
 
     String executeEntityCreate(String entity) throws SU_eToolkitAPIException, InterruptedException {

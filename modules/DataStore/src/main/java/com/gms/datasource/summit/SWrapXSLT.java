@@ -3,6 +3,7 @@ package com.gms.datasource.summit;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -15,7 +16,9 @@ public class SWrapXSLT {
 
     public SWrapXSLT(){
         try {
-            StreamSource entListXslt = new StreamSource("Stylesheet_EntList.xsl");
+            File xsltFile = new File(getClass().getClassLoader().
+                    getResource("Stylesheet_EntList.xsl").getFile());
+            StreamSource entListXslt = new StreamSource(xsltFile.getAbsolutePath());
             TransformerFactory transFactory = TransformerFactory.newInstance();
             entListTrans = transFactory.newTransformer(entListXslt);
         } catch (TransformerConfigurationException e) {

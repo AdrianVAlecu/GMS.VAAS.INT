@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
 import com.gms.datasource.TradesDAO;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,14 +19,15 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value="/api")
+@ContextConfiguration({"classpath:applicationContext.xml"})
 public class TradesController {
 
     @Resource
     private TradesDAO tradesDAO;
 
     @RequestMapping(value="/trade/{id}", method= RequestMethod.GET)
-    public List<TradeId> getTrade(@PathVariable String query) throws IOException, JsonProcessingException {
-        return tradesDAO.getTradeIds(query);
+    public List<TradeId> getTrade(@PathVariable("id") String query) throws IOException, JsonProcessingException {
+        return tradesDAO.getTradeIds("and TradeId in ('" + query + "')");
     }
 
     @RequestMapping(value="/trades", method=RequestMethod.GET)

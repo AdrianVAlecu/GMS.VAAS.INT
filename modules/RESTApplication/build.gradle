@@ -1,4 +1,18 @@
+buildscript{
+    repositories{
+        mavenCentral()
+        flatDir() {
+            dirs "$rootProject.projectDir/modules/DataStore/libs/summit/java"
+        }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE")
+    }
+}
+
 apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
 
 dependencies {
     compile project(':modules:DataStore')
@@ -23,9 +37,11 @@ dependencies {
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12
-    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.24'
+    //compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.24'
 
 
+    compile("org.springframework.boot:spring-boot-starter-web")
+    testCompile("org.springframkework.boot:spring-boot-starter-test")
 
 }
 

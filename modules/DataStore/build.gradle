@@ -3,8 +3,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework/spring-context
     compile group: 'org.springframework', name: 'spring-context', version: '4.3.7.RELEASE'
 
+    // https://mvnrepository.com/artifact/org.springframework/spring-test
+    compile group: 'org.springframework', name: 'spring-test', version: '4.3.7.RELEASE'
 
-    compile group: 'org.apache.axis2', name: 'axis2-kernel', version: '1.7.4'
+    //compile group: 'org.apache.axis2', name: 'axis2-kernel', version: '1.7.4'
     compile group: 'org.apache.axis2', name: 'axis2-adb', version: '1.7.4'
     compile group: 'org.apache.axis2', name: 'axis2-transport-local', version: '1.7.4'
     compile group: 'org.apache.axis2', name: 'axis2-transport-http', version: '1.7.4'

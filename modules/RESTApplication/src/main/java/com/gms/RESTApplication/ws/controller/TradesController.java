@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
 import com.gms.datasource.TradesDAO;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value="/api")
-@ContextConfiguration({"classpath:applicationContext.xml"})
+@ImportResource({"classpath:summit-spring.xml"})
 public class TradesController {
 
     @Resource

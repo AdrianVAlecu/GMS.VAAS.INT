@@ -16,7 +16,7 @@ import java.util.List;
  * Created by GMS on 05/03/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:applicationContext.xml")
+@ContextConfiguration(locations="classpath:summit-spring.xml")
 public class TradesDAOTest {
 
     @Resource

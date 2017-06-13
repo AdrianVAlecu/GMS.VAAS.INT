@@ -19,19 +19,6 @@ public class WebAppInitialiser implements WebApplicationInitializer{
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException{
-        AnnotationConfigWebApplicationContext rootContext =
-                new AnnotationConfigWebApplicationContext();
 
-        rootContext.register(TradesDAO.class);
-        servletContext.addListener(new ContextLoaderListener(rootContext));
-
-        AnnotationConfigWebApplicationContext dispatcherServlet =
-                new AnnotationConfigWebApplicationContext();
-        dispatcherServlet.register(WebMvcConfig.class);
-
-        ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher",
-                new DispatcherServlet(dispatcherServlet));
-        dispatcher.setLoadOnStartup(1);
-        dispatcher.addMapping("/");
     }
 }

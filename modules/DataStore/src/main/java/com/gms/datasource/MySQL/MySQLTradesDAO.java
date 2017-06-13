@@ -12,16 +12,13 @@ import javax.sql.DataSource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
 import com.gms.datasource.TradesDAO;
 
-@Repository("tradesRepository")
 public class MySQLTradesDAO implements TradesDAO{
 	
 	private DataSource dataSource;

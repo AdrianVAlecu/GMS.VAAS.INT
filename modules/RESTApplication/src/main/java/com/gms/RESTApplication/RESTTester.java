@@ -1,29 +1,26 @@
 package com.gms.RESTApplication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gms.datasource.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-@ImportResource("classpath:applicationContext.xml")
-public class RESTTester {
+@ImportResource("classpath:summit-spring.xml")
+@PropertySource(value={"classpath:summit.app.properties"})
+public class RESTTester extends SpringBootServletInitializer {
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(RESTTester.class);
+    }
+
     public static void main(String[] args){
         SpringApplication.run(RESTTester.class, args);
 
         /*
-        ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+        ApplicationContext appContext = new ClassPathXmlApplicationContext("summit-spring.xml");
 
         if (appContext instanceof ConfigurableApplicationContext) {
             ((ConfigurableApplicationContext)appContext).registerShutdownHook();

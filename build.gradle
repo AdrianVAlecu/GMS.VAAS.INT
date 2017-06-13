@@ -32,9 +32,9 @@ subprojects {
         // https://mvnrepository.com/artifact/org.mockito/mockito-all
         testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
         // https://mvnrepository.com/artifact/org.springframework/spring-test
-        testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.7.RELEASE'
+        //testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.7.RELEASE'
         // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
-        compile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.5.1.RELEASE'
+        //compile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.5.1.RELEASE'
 
     }
 }

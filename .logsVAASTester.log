@@ -1,8 +1,0 @@
-2017-06-13 07:38:51 DEBUG SU_eToolkitAPI_Impl:155 - Connecting ETKS with params
-2017-06-13 07:38:51 DEBUG SU_eToolkitAPI_Impl:239 - We found that firewall is false
-2017-06-13 07:38:51 DEBUG SU_eToolkitAPI_Impl:269 - Timeout on SOAP is 7200000
-2017-06-13 07:38:51 DEBUG SU_eToolkitAPI_Impl:337 - ETK Session location http://gmsvm:9090/axis2/services/ETKSessionService
-2017-06-13 07:38:52 WARN  SU_eToolkitAPI_Impl:499 - No addressing path provided, trying without it 27e52ad4-33fc-4680-bd3e-a6ff61f3db99
-2017-06-13 07:38:56 DEBUG SU_eToolkitAPI_Impl:461 - ETKSession provided ETK eTKS_ETKPoolService.axis2@GMSVM@9090#SFIL_SUM_DS#SQLEXPRESS##summitadmin#170613073852832_562
-2017-06-13 07:38:56 WARN  SU_eToolkitAPI_Impl:499 - No addressing path provided, trying without it 27e52ad4-33fc-4680-bd3e-a6ff61f3db99
-2017-06-13 07:38:56 INFO  SU_eToolkitAPI_Impl:342 - Connected ETKS http://GMSVM:10001 27e52ad4-33fc-4680-bd3e-a6ff61f3db99

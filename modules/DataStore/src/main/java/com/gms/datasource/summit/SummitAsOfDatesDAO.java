@@ -17,34 +17,40 @@ import java.util.Map;
 public class SummitAsOfDatesDAO implements AsOfDatesDAO {
     private SWrapEToolKit etkWrap;
     public Map<String, String> dates;
+    private String documentPath;
 
-    SummitAsOfDatesDAO(SWrapEToolKit etkWrap, String documentPath) throws SU_eToolkitAPIException, InterruptedException {
+    SummitAsOfDatesDAO(SWrapEToolKit etkWrap, String documentPath)  {
         this.etkWrap = etkWrap;
-        dates = new HashMap<>();
+        this.documentPath = documentPath;
 
-        String sql = "select LocationName, max(Today) from dmLOCATION group by LocationName";
-        List<List<String>> queryResult = this.etkWrap.executeDBQuery(sql);
-
-        for(List<String> location : queryResult ) {
-            dates.put(location.get(0), convertDate(location.get(1)));
-
-            try {
-
-                String fileName = documentPath + "/location_" + location.get(0) + ".json";
-                File jsonFile = new File(fileName);
-                System.out.println("Trying to write file to disk: " + jsonFile.getCanonicalPath());
-                FileUtils.writeStringToFile(new File(fileName), location.get(1));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        this.dates = new HashMap<>();
     }
 
     String convertDate(String date){
         return date;
     }
 
-    public List<String> getValues(){
+    public List<String> getValues() throws SU_eToolkitAPIException, InterruptedException {
+
+        if ( dates.isEmpty() ) {
+            String sql = "select LocationName, max(Today) from dmLOCATION group by LocationName";
+            List<List<String>> queryResult = this.etkWrap.executeDBQuery(sql);
+
+            for (List<String> location : queryResult) {
+                dates.put(location.get(0), convertDate(location.get(1)));
+
+                try {
+
+                    String fileName = documentPath + "/location_" + location.get(0) + ".json";
+                    File jsonFile = new File(fileName);
+                    System.out.println("Trying to write file to disk: " + jsonFile.getCanonicalPath());
+                    FileUtils.writeStringToFile(new File(fileName), location.get(1));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         List<String> values = new ArrayList<>();
         for(Map.Entry<String, String> location : dates.entrySet() ) {
 

@@ -5,6 +5,7 @@ import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
 import com.gms.datasource.TradesDAO;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value="/api")
 @ImportResource({"classpath:summit-spring.xml"})
+@PropertySource(value={"classpath:summit.app.properties"})
 public class TradesController {
 
     @Resource

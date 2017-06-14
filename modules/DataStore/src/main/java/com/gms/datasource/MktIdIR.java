@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * Created by gms on 5/30/2017.
  */
-@JsonTypeName("toto")
-public class IRMktId extends MktId {
+@JsonTypeName("MktIdIR")
+public class MktIdIR extends MktId {
 
     String ccy;
     String index;
@@ -34,8 +34,8 @@ public class IRMktId extends MktId {
         return "IR_" + curveId + "_" + asOf + "_" + getCcy() + "_" + getIndex();
     }
 
-    public IRMktId(String ccy, String index){
-        setClassId("IRMktId");
+    public MktIdIR(String ccy, String index){
+        setClassId("MktIdIR");
         this.ccy = ccy;
         this.index = index;
     }

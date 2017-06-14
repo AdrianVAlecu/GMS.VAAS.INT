@@ -29,7 +29,6 @@ dependencies {
 
 
     compile("org.springframework.boot:spring-boot-starter-web")
-    testCompile("org.springframkework.boot:spring-boot-starter-test")
 
 }
 

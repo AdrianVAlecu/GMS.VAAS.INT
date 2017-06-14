@@ -40,9 +40,9 @@ public class SummitMktsDAO implements MktsDAO {
                 String subIndex = assetJson.path("SubIndex").asText();
 
                 if ( !dmIndex.equals("FIXED") ) {
-                    mktIds = addMkt(mktIds, new IRMktId(ccy, dmIndex));
+                    mktIds = addMkt(mktIds, new MktIdIR(ccy, dmIndex));
                 }
-                mktIds = addMkt(mktIds, new IRMktId(ccy, subIndex));
+                mktIds = addMkt(mktIds, new MktIdIR(ccy, subIndex));
             }
         }
 
@@ -68,7 +68,7 @@ public class SummitMktsDAO implements MktsDAO {
                 String mktStr = mktsStr.get(index);
                 Map<String, String> points = domWrapper.convertZeroResult(mktsStr.get(index));
 
-                IRMkt mkt = new IRMkt((IRMktId)mktIds.get(index), points);
+                MktZeroCurve mkt = new MktZeroCurve((MktIdIR)mktIds.get(index), points);
                 index ++;
                 mkts.add(mkt);
 

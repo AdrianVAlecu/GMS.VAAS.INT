@@ -8,7 +8,10 @@ import com.fasterxml.jackson.annotation.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = IRMktId.class, name = "IRMktId")
+        @JsonSubTypes.Type(value = MktIdIR.class, name = "MktIdIR"),
+        @JsonSubTypes.Type(value = MktIdIR.class, name = "MktIdFXRate"), //FXRATE/USD/HKD
+        @JsonSubTypes.Type(value = MktIdIR.class, name = "MktIdFXVol"), //FXVOL/EUR/CHF
+        @JsonSubTypes.Type(value = MktIdIR.class, name = "MktIdFWDVol")
 })
 public abstract class MktId {
 

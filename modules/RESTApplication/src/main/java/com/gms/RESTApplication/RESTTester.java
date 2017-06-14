@@ -8,8 +8,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-@ImportResource("classpath:summit-spring.xml")
-@PropertySource(value={"classpath:summit.app.properties"})
 public class RESTTester extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {

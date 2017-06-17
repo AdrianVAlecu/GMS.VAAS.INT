@@ -28,8 +28,8 @@ public class SummitDAOMkts implements DAOMkts {
     }
 
     @Override
-    public Map<String, MktId> getMktIds(Map<String, Trade> trades) throws IOException, JsonProcessingException {
-        Map<String, MktId> mktIds = new HashMap<>();
+    public Map<String, IdMkt> getMktIds(Map<String, Trade> trades) throws IOException, JsonProcessingException {
+        Map<String, IdMkt> mktIds = new HashMap<>();
 
         for(Map.Entry<String, Trade> trade : trades.entrySet()){
             JsonNode tradeJson = trade.getValue().getTradeJSON();
@@ -56,23 +56,23 @@ public class SummitDAOMkts implements DAOMkts {
 
 
     @Override
-    public Map<String, Mkt> getMkts(Map<String, MktId> mktIds, String curveId, String asOfDate) throws IOException, JsonProcessingException {
+    public Map<String, Mkts> getMkts(Map<String, IdMkt> mktIds, String curveId, String asOfDate) throws IOException, JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
 
         try {
 
-            Map<String, Mkt> mkts = new HashMap<>();
+            Map<String, Mkts> mkts = new HashMap<>();
 
             Map<String, String> entitiesZero = new HashMap<>();
             Map<String, String> entitiesCOMM = new HashMap<>();
-            for (Map.Entry<String, MktId> mktId : mktIds.entrySet()) {
-                if ( mktId.getValue().getClassId() == "MktIdIR" ) {
+            for (Map.Entry<String, IdMkt> mktId : mktIds.entrySet()) {
+                if ( mktId.getValue().getClassId() == "IdMktIR" ) {
                     entitiesZero.put(mktId.getKey(), mktId.getValue().getRequest(curveId, asOfDate));
                 }
 
-                if ( mktId.getValue().getClassId() == "MktIdFXRate" ||
-                        mktId.getValue().getClassId() == "MktIdFXRate") {
+                if ( mktId.getValue().getClassId() == "IdMktFXRate" ||
+                        mktId.getValue().getClassId() == "IdMktFXRate") {
                     entitiesCOMM.put(mktId.getKey(), mktId.getValue().getRequest(curveId, asOfDate));
                 }
             }
@@ -82,11 +82,11 @@ public class SummitDAOMkts implements DAOMkts {
             for (SWrapEToolKit.ETKResponse mktResp : mktsStr ){
                 Map<String, String> points = domWrapper.convertZeroResult(mktResp.getResponse());
 
-                MktId mktId = mktIds.get(mktResp.getId());
-                MktZeroCurve mkt = new MktZeroCurve((MktIdIR)mktId, points);
+                IdMkt idMkt = mktIds.get(mktResp.getId());
+                MktsZeroCurve mkt = new MktsZeroCurve((IdMktIR) idMkt, points);
                 mkts.put(mktResp.getId(), mkt);
 
-                sFile.writeStringToFile(mktId.getId(curveId, asOfDate) + ".json",
+                sFile.writeStringToFile(idMkt.getId(curveId, asOfDate) + ".json",
                         sJson.writeJSON(mkt));
             }
 
@@ -100,40 +100,40 @@ public class SummitDAOMkts implements DAOMkts {
 
     }
 
-    public Map<String, MktId> addZeroMkt(Map<String, MktId> mktIds, JsonNode assetJson) {
+    public Map<String, IdMkt> addZeroMkt(Map<String, IdMkt> mktIds, JsonNode assetJson) {
         String ccy = assetJson.path("Ccy").asText();
         String dmIndex = assetJson.path("INTEREST_dmIndex").asText();
         String subIndex = assetJson.path("SubIndex").asText();
 
         if ( !dmIndex.equals("FIXED") ) {
-            mktIds = addMkt(mktIds, new MktIdIR(ccy, dmIndex));
+            mktIds = addMkt(mktIds, new IdMktIR(ccy, dmIndex));
         }
-        mktIds = addMkt(mktIds, new MktIdIR(ccy, subIndex));
+        mktIds = addMkt(mktIds, new IdMktIR(ccy, subIndex));
 
         return mktIds;
     }
 
-    public Map<String, MktId> addFXRateMkt(Map<String, MktId> mktIds, JsonNode asset1Json, JsonNode asset2Json) {
+    public Map<String, IdMkt> addFXRateMkt(Map<String, IdMkt> mktIds, JsonNode asset1Json, JsonNode asset2Json) {
         String ccy1 = asset1Json.path("Ccy").asText();
         String ccy2 = asset1Json.path("Ccy").asText();
 
-        mktIds = addMkt(mktIds, new MktIdFXRate(ccy1, ccy2));
+        mktIds = addMkt(mktIds, new IdMktFXRate(ccy1, ccy2));
 
         return mktIds;
     }
 
-    public Map<String, MktId> addFXVolMkt(Map<String, MktId> mktIds, JsonNode asset1Json, JsonNode asset2Json) {
+    public Map<String, IdMkt> addFXVolMkt(Map<String, IdMkt> mktIds, JsonNode asset1Json, JsonNode asset2Json) {
         String ccy1 = asset1Json.path("Ccy").asText();
         String ccy2 = asset1Json.path("Ccy").asText();
 
-        mktIds = addMkt(mktIds, new MktIdFXVol(ccy1, ccy2));
+        mktIds = addMkt(mktIds, new IdMktFXVol(ccy1, ccy2));
 
         return mktIds;
     }
 
-    public Map<String, MktId> addMkt(Map<String, MktId> mktIds, MktId mkt){
+    public Map<String, IdMkt> addMkt(Map<String, IdMkt> mktIds, IdMkt mkt){
         boolean found = false;
-        for (Map.Entry<String, MktId> it : mktIds.entrySet() ){
+        for (Map.Entry<String, IdMkt> it : mktIds.entrySet() ){
             if ( it.getValue().getRequest("", "").equals(mkt.getRequest("", "")) ){
                 found = true;
                 break;

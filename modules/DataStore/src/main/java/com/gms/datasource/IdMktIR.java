@@ -1,15 +1,12 @@
 package com.gms.datasource;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Created by gms on 5/30/2017.
  */
-@JsonTypeName("MktIdIR")
-public class MktIdIR extends MktId {
+@JsonTypeName("IdMktIR")
+public class IdMktIR extends IdMkt {
 
     String ccy;
     String index;
@@ -34,8 +31,8 @@ public class MktIdIR extends MktId {
         return "IR_" + curveId + "_" + asOf + "_" + getCcy() + "_" + getIndex();
     }
 
-    public MktIdIR(String ccy, String index){
-        setClassId("MktIdIR");
+    public IdMktIR(String ccy, String index){
+        setClassId("IdMktIR");
         this.ccy = ccy;
         this.index = index;
     }

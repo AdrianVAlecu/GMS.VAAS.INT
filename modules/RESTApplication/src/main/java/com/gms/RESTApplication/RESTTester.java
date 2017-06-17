@@ -34,11 +34,11 @@ public class RESTTester extends SpringBootServletInitializer {
             String tradeIdsJson = mapper.writeValueAsString(tradeIdsList);
             List<Trade> tradesList = trades.getTrades(tradeIdsList);
 
-            List<MktId> mktIdsList = mkts.getMktIds(tradesList);
+            List<IdMkt> mktIdsList = mkts.getMktIds(tradesList);
             String curveId = "EOD"; //EOD / EODDVM / RISK / RISKC1Y
             List<String> dates = asOfDates.getValues();
             for (String date : dates ) {
-                List<Mkt> mktsList = mkts.getMkts(mktIdsList, curveId, date);
+                List<Mkts> mktsList = mkts.getMkts(mktIdsList, curveId, date);
                 if ( mktsList.isEmpty() ) {
                     System.out.println("Failed to get market cvId: " + curveId + " asOfdate: " + date);
                 }

@@ -5,20 +5,20 @@ import java.util.Map;
 /**
  * Created by gms on 6/3/2017.
  */
-public class MktZeroCurve extends Mkt {
-    private MktIdIR mktId;
+public class MktsZeroCurve extends Mkts {
+    private IdMktIR mktId;
     private Map<String, String> points;
 
-    public MktZeroCurve(MktIdIR mktId, Map<String, String> points){
+    public MktsZeroCurve(IdMktIR mktId, Map<String, String> points){
         this.mktId = mktId;
         this.points = points;
     }
 
-    public MktIdIR getMktId() {
+    public IdMktIR getMktId() {
         return mktId;
     }
 
-    public void setMktId(MktIdIR mktId) {
+    public void setMktId(IdMktIR mktId) {
         this.mktId = mktId;
     }
 }

@@ -3,12 +3,12 @@ package com.gms.datasource;
 /**
  * Created by gms on 6/14/2017.
  */
-public class MktIdFXRate extends MktId {
+public class IdMktFXRate extends IdMkt {
     String ccy1;
     String ccy2;
 
-    public MktIdFXRate(String ccy1, String ccy2){
-        setClassId("MktIdFXRate");
+    public IdMktFXRate(String ccy1, String ccy2){
+        setClassId("IdMktFXRate");
         this.ccy1 = ccy1;
         this.ccy2 = ccy2;
     }

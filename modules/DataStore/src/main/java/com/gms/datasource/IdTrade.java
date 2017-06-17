@@ -4,18 +4,18 @@ package com.gms.datasource;
  * @author GMS
  *
  */
-public class TradeId {
+public class IdTrade {
 	String TradeType;
 	String TradeId;
 	int TradeVersion;
 
-	public TradeId()
+	public IdTrade()
 	{
 		TradeType = "";
 		TradeId = "";
 		TradeVersion = 0;
 	}
-	public TradeId(String tradeType, String tradeId, int tradeVersion)
+	public IdTrade(String tradeType, String tradeId, int tradeVersion)
 	{
 		TradeType = tradeType;
 		TradeId = tradeId;
@@ -26,7 +26,7 @@ public class TradeId {
 		return "TRADE_" + getTradeType() + "_" + getTradeId() + "_" + getTradeVersion();
 	}
 	/**
-	 * @return the tradeId
+	 * @return the idTrade
 	 */
 	public String getTradeId() {
 		return TradeId;
@@ -48,7 +48,7 @@ public class TradeId {
 
 	/**
 	 * @param tradeId
-	 *            the tradeId to set
+	 *            the idTrade to set
 	 */
 	public void setTradeId(String tradeId) {
 		TradeId = tradeId;

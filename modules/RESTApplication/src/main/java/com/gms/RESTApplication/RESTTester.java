@@ -29,7 +29,7 @@ public class RESTTester extends SpringBootServletInitializer {
         DAOAsOfDates asOfDates = appContext.getBean("asOfDates", DAOAsOfDates.class);
 
         try {
-            List<TradeId> tradeIdsList = trades.getTradeIds(" and dmOwnerTable in ('SWAP', 'MM', 'MUST_TR') and TradeId in ('11388L1') ");
+            List<IdTrade> tradeIdsList = trades.getTradeIds(" and dmOwnerTable in ('SWAP', 'MM', 'MUST_TR') and IdTrade in ('11388L1') ");
             ObjectMapper mapper = new ObjectMapper();
             String tradeIdsJson = mapper.writeValueAsString(tradeIdsList);
             List<Trade> tradesList = trades.getTrades(tradeIdsList);

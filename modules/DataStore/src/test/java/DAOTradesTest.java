@@ -25,7 +25,7 @@ public class DAOTradesTest {
     @Test
     public void getTradeIds() {
         try {
-            Map<String, TradeId> tradeIds = DAOTrades.getTradeIds("");
+            Map<String, IdTrade> tradeIds = DAOTrades.getTradeIds("");
             Assert.assertNotNull(tradeIds);
             Assert.assertTrue(tradeIds.size() > 0 );
         }catch(IOException e) {
@@ -35,9 +35,9 @@ public class DAOTradesTest {
     @Test
     public void getTrades() {
         try {
-            Map<String, TradeId> tradeIds = new HashMap<>();
-            TradeId tradeId = new TradeId("MM","11312C", 1);
-            tradeIds.put(tradeId.getId(), tradeId);
+            Map<String, IdTrade> tradeIds = new HashMap<>();
+            IdTrade idTrade = new IdTrade("MM","11312C", 1);
+            tradeIds.put(idTrade.getId(), idTrade);
             Map<String, Trade> trades = DAOTrades.getTrades(tradeIds);
             Assert.assertNotNull(trades);
             Assert.assertTrue(trades.size() > 0);

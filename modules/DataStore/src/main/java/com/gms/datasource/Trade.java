@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.JsonNode;
  *
  */
 public class Trade {
-	TradeId tradeId;
+	IdTrade idTrade;
 	JsonNode tradeJSON;
 
-	public Trade(TradeId tradeId, JsonNode tradeJSON)
+	public Trade(IdTrade idTrade, JsonNode tradeJSON)
 	{
-		this.tradeId = tradeId;
+		this.idTrade = idTrade;
 		this.tradeJSON = tradeJSON;
 	}
 	/**
@@ -23,10 +23,10 @@ public class Trade {
 	}
 
 	/**
-	 * @return the tradeId
+	 * @return the idTrade
 	 */
-	public TradeId getTradeId() {
-		return this.tradeId;
+	public IdTrade getIdTrade() {
+		return this.idTrade;
 	}
 
 	/**
@@ -38,11 +38,11 @@ public class Trade {
 	}
 
 	/**
-	 * @param tradeId
-	 *            the tradeId to set
+	 * @param idTrade
+	 *            the idTrade to set
 	 */
-	public void setTradeId(TradeId tradeId) {
-		this.tradeId = tradeId;
+	public void setIdTrade(IdTrade idTrade) {
+		this.idTrade = idTrade;
 	}
 }
 

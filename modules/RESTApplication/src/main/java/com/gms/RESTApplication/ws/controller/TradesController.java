@@ -1,8 +1,8 @@
 package com.gms.RESTApplication.ws.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gms.datasource.IdTrade;
 import com.gms.datasource.Trade;
-import com.gms.datasource.TradeId;
 import com.gms.datasource.DAOTrades;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
@@ -28,12 +28,12 @@ public class TradesController {
     private DAOTrades DAOTrades;
 
     @RequestMapping(value="/trade/{id}", method= RequestMethod.GET)
-    public Map<String, TradeId> getTrade(@PathVariable("id") String query) throws IOException, JsonProcessingException {
-        return DAOTrades.getTradeIds("and TradeId in ('" + query + "')");
+    public Map<String, IdTrade> getTrade(@PathVariable("id") String query) throws IOException, JsonProcessingException {
+        return DAOTrades.getTradeIds("and IdTrade in ('" + query + "')");
     }
 
     @RequestMapping(value="/trades", method=RequestMethod.GET)
-    public Map<String, Trade> getTrades(@PathVariable Map<String, TradeId> tradeIds) throws IOException, JsonProcessingException {
+    public Map<String, Trade> getTrades(@PathVariable Map<String, IdTrade> tradeIds) throws IOException, JsonProcessingException {
         return DAOTrades.getTrades(tradeIds);
     }
 }

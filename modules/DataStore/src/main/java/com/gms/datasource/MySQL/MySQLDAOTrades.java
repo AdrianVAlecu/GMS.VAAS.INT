@@ -15,24 +15,24 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gms.datasource.IdTrade;
 import com.gms.datasource.Trade;
-import com.gms.datasource.TradeId;
 import com.gms.datasource.DAOTrades;
 
 public class MySQLDAOTrades implements DAOTrades {
 	
 	private DataSource dataSource;
 	
-	public Map<String, TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
+	public Map<String, IdTrade> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
-		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
-		String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where ?";
+		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
+		String sql = "SELECT TradeType, IdTrade, TradeVersion from SummitTradeData where ?";
 		
 		Connection conn = null;
 		
 		try
 		{
-			Map<String, TradeId> tradeIds = new HashMap<>();
+			Map<String, IdTrade> tradeIds = new HashMap<>();
 			
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -40,8 +40,8 @@ public class MySQLDAOTrades implements DAOTrades {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next())
 			{
-				TradeId tradeId = new TradeId(rs.getString("TradeType"),rs.getString("TradeId"),rs.getInt("TradeVersion"));
-				tradeIds.put(tradeId.getId(), tradeId);
+				IdTrade idTrade = new IdTrade(rs.getString("TradeType"),rs.getString("IdTrade"),rs.getInt("TradeVersion"));
+				tradeIds.put(idTrade.getId(), idTrade);
 			}
 			rs.close();
 			ps.close();
@@ -63,10 +63,10 @@ public class MySQLDAOTrades implements DAOTrades {
 		}
 	}
 	
-	public Map<String, Trade> getTrades(Map<String, TradeId> tradeIds) throws IOException, JsonProcessingException{
+	public Map<String, Trade> getTrades(Map<String, IdTrade> tradeIds) throws IOException, JsonProcessingException{
 		
-		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
-		String sql = "SELECT tradeJSON from SummitTradeData where TradeType = ? and TradeId = ? and TradeVersion = ?";
+		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
+		String sql = "SELECT tradeJSON from SummitTradeData where TradeType = ? and IdTrade = ? and TradeVersion = ?";
 		
 		Connection conn = null;
 		
@@ -75,13 +75,13 @@ public class MySQLDAOTrades implements DAOTrades {
 			Map<String, Trade> trades = new HashMap<>();
 			
 			/// TBDAA - execute this in batchs of 1000
-			for (Map.Entry<String, TradeId> tradeIdEntry: tradeIds.entrySet() ) {
+			for (Map.Entry<String, IdTrade> tradeIdEntry: tradeIds.entrySet() ) {
 
-				TradeId tradeId = tradeIdEntry.getValue();
+				IdTrade idTrade = tradeIdEntry.getValue();
 				PreparedStatement ps = conn.prepareStatement(sql);
-				ps.setString(1,tradeId.getTradeType());
-				ps.setString(2,tradeId.getTradeId());
-				ps.setInt(3,tradeId.getTradeVersion());
+				ps.setString(1, idTrade.getTradeType());
+				ps.setString(2, idTrade.getTradeId());
+				ps.setInt(3, idTrade.getTradeVersion());
 				ResultSet rs = ps.executeQuery();
 				ObjectMapper jsonMapper = new ObjectMapper();
 				jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -89,7 +89,7 @@ public class MySQLDAOTrades implements DAOTrades {
 				while(rs.next())
 				{
 					JsonNode tradeJson = jsonMapper.readTree(rs.getString("tradeJSON"));
-					Trade trade = new Trade(tradeId, tradeJson);
+					Trade trade = new Trade(idTrade, tradeJson);
 					trades.put(tradeIdEntry.getKey(), trade);
 				}
 				rs.close();

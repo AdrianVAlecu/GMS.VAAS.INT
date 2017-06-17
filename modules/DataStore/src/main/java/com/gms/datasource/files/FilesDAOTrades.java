@@ -11,19 +11,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gms.datasource.DAOTrades;
 import com.gms.datasource.Trade;
-import com.gms.datasource.TradeId;
+import com.gms.datasource.IdTrade;
 
 public class FilesDAOTrades implements DAOTrades {
-    	public Map<String, TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
+    	public Map<String, IdTrade> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
-		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
-		String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where " + query;
+		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
+		String sql = "SELECT TradeType, IdTrade, TradeVersion from SummitTradeData where " + query;
 		
 		try
 		{
-			Map<String, TradeId> tradeIds = new HashMap<>();
-			TradeId tradeId = new TradeId("TradeType","TradeId",1);
-			tradeIds.put(tradeId.getId(), tradeId);
+			Map<String, IdTrade> tradeIds = new HashMap<>();
+			IdTrade idTrade = new IdTrade("TradeType","IdTrade",1);
+			tradeIds.put(idTrade.getId(), idTrade);
 
 			ObjectMapper mapper = new ObjectMapper();
 			return tradeIds;
@@ -37,10 +37,10 @@ public class FilesDAOTrades implements DAOTrades {
 		}
 	}
 	
-	public Map<String, Trade> getTrades(Map<String, TradeId> tradeIds) throws IOException, JsonProcessingException{
+	public Map<String, Trade> getTrades(Map<String, IdTrade> tradeIds) throws IOException, JsonProcessingException{
 		
-		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
-		String sql = "SELECT TradeXML from SummitTradeData where TradeType = ? and TradeId = ? and TradeVersion = ?";
+		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
+		String sql = "SELECT TradeXML from SummitTradeData where TradeType = ? and IdTrade = ? and TradeVersion = ?";
 		
 		try
 		{
@@ -50,18 +50,18 @@ public class FilesDAOTrades implements DAOTrades {
 			jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 			/// TBDAA - execute this in batchs of 1000
-			for (Map.Entry<String, TradeId> tradeIdEntry: tradeIds.entrySet() ) {
+			for (Map.Entry<String, IdTrade> tradeIdEntry: tradeIds.entrySet() ) {
 
-				TradeId tradeId = tradeIdEntry.getValue();
+				IdTrade idTrade = tradeIdEntry.getValue();
     			StringBuffer outXMLResponse = new StringBuffer();
     			Vector<StringBuffer> messageList = new Vector<StringBuffer>();
 
-                String tradeSQL = "SELECT TradeJSON from SummitTradeData where TradeType = " + tradeId.getTradeType() + 
-                                                    " and TradeId = " + tradeId.getTradeId() +
-                                                    " and TradeVersion = " + tradeId.getTradeVersion();
+                String tradeSQL = "SELECT TradeJSON from SummitTradeData where TradeType = " + idTrade.getTradeType() +
+                                                    " and IdTrade = " + idTrade.getTradeId() +
+                                                    " and TradeVersion = " + idTrade.getTradeVersion();
 
 				JsonNode tradeJson = jsonMapper.readTree("TradeJSON");
-				Trade trade = new Trade(tradeId, tradeJson);
+				Trade trade = new Trade(idTrade, tradeJson);
 				trades.put(tradeIdEntry.getKey(), trade);
 			}
 			

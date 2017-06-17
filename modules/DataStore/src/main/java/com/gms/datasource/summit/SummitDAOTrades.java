@@ -4,12 +4,12 @@ import java.io.*;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.gms.datasource.IdTrade;
 import summit.etkapi_ws.SU_eToolkitAPIException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.Trade;
-import com.gms.datasource.TradeId;
 import com.gms.datasource.DAOTrades;
 
 public class SummitDAOTrades implements DAOTrades {
@@ -27,21 +27,21 @@ public class SummitDAOTrades implements DAOTrades {
         sFile = new SWrapFile(documentPath);
     }
 
-	public Map<String, TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
+	public Map<String, IdTrade> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
-		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
-		/// String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where " + query;
-		String sql = "SELECT TradeId, dmOwnerTable, Audit_Version from dmENV where Audit_Current = 'Y' " + query;
+		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
+		/// String sql = "SELECT TradeType, IdTrade, TradeVersion from SummitTradeData where " + query;
+		String sql = "SELECT IdTrade, dmOwnerTable, Audit_Version from dmENV where Audit_Current = 'Y' " + query;
 		
 		try
 		{
-			Map<String, TradeId> tradeIds = new HashMap<>();
+			Map<String, IdTrade> tradeIds = new HashMap<>();
 
 			List<List<String>> queryResult = etkWrap.executeDBQuery(sql);
 
 			for ( List<String> row : queryResult ){
-				TradeId tradeId = new TradeId(row.get(1),row.get(0),Integer.parseInt(row.get(2)));
-				tradeIds.put(tradeId.getId(), tradeId);
+				IdTrade idTrade = new IdTrade(row.get(1),row.get(0),Integer.parseInt(row.get(2)));
+				tradeIds.put(idTrade.getId(), idTrade);
 			}
 			ObjectMapper mapper = new ObjectMapper();
 			return tradeIds;
@@ -55,7 +55,7 @@ public class SummitDAOTrades implements DAOTrades {
 		}
 	}
 	
-	public Map<String, Trade> getTrades(Map<String, TradeId> tradeIds){
+	public Map<String, Trade> getTrades(Map<String, IdTrade> tradeIds){
 
 		try
 		{
@@ -63,22 +63,22 @@ public class SummitDAOTrades implements DAOTrades {
 
 			Map<String, String> entities = new HashMap<>();
 
-			for (Map.Entry<String, TradeId> entry: tradeIds.entrySet() ) {
-				TradeId tradeId = entry.getValue();
-				String entity = etkWrap.executeEntityCreate(tradeId.getTradeType());
-				entity = entity.replace("<TradeId/>", "<TradeId>" + tradeId.getTradeId() + "</TradeId>");
-				entities.put(tradeId.getId(), entity);
+			for (Map.Entry<String, IdTrade> entry: tradeIds.entrySet() ) {
+				IdTrade idTrade = entry.getValue();
+				String entity = etkWrap.executeEntityCreate(idTrade.getTradeType());
+				entity = entity.replace("<IdTrade/>", "<IdTrade>" + idTrade.getTradeId() + "</IdTrade>");
+				entities.put(idTrade.getId(), entity);
 			}
 			List<SWrapEToolKit.ETKResponse> tradesStr = etkWrap.execute("s_base::EntityRead", entities);
 
 			for (SWrapEToolKit.ETKResponse tradeResp : tradesStr) {
-				TradeId tradeId = tradeIds.get(tradeResp.getId());
+				IdTrade idTrade = tradeIds.get(tradeResp.getId());
 				JsonNode tradeNode = sJson.readXML(sXslt.applyEntList(tradeResp.getResponse()));
-				trades.put(tradeId.getId(), new Trade(tradeId, tradeNode));
+				trades.put(idTrade.getId(), new Trade(idTrade, tradeNode));
 
-				sFile.writeStringToFile(tradeId.getTradeType() + "_" +
-							tradeId.getTradeId() + "_" +
-							tradeId.getTradeVersion() + ".json",
+				sFile.writeStringToFile(idTrade.getTradeType() + "_" +
+							idTrade.getTradeId() + "_" +
+							idTrade.getTradeVersion() + ".json",
 						sJson.writeJSON(tradeNode));
 			}
 

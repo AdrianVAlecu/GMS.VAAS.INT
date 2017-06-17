@@ -1,7 +1,9 @@
 package com.gms.datasource.files;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,16 +16,16 @@ import com.gms.datasource.TradeId;
 import com.gms.datasource.TradesDAO;
 
 public class FilesTradesDAO implements TradesDAO {
-    	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
+    	public Map<String, TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where " + query;
 		
 		try
 		{
-			List<TradeId> tradeIds = new Vector<TradeId>();
+			Map<String, TradeId> tradeIds = new HashMap<>();
 			TradeId tradeId = new TradeId("TradeType","TradeId",1);
-			tradeIds.add(tradeId);
+			tradeIds.put(tradeId.getId(), tradeId);
 
 			ObjectMapper mapper = new ObjectMapper();
 			return tradeIds;
@@ -37,21 +39,22 @@ public class FilesTradesDAO implements TradesDAO {
 		}
 	}
 	
-	public List<Trade> getTrades(List<TradeId> tradeIds) throws IOException, JsonProcessingException{
+	public Map<String, Trade> getTrades(Map<String, TradeId> tradeIds) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeXML from SummitTradeData where TradeType = ? and TradeId = ? and TradeVersion = ?";
 		
 		try
 		{
-			List<Trade> trades = new Vector<Trade>();
+			Map<String, Trade> trades = new HashMap<>();
 
 			ObjectMapper jsonMapper = new ObjectMapper();
 			jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 			/// TBDAA - execute this in batchs of 1000
-			for (TradeId tradeId: tradeIds ) {
+			for (Map.Entry<String, TradeId> tradeIdEntry: tradeIds.entrySet() ) {
 
+				TradeId tradeId = tradeIdEntry.getValue();
     			StringBuffer outXMLResponse = new StringBuffer();
     			Vector<StringBuffer> messageList = new Vector<StringBuffer>();
 
@@ -61,7 +64,7 @@ public class FilesTradesDAO implements TradesDAO {
 
 				JsonNode tradeJson = jsonMapper.readTree("TradeJSON");
 				Trade trade = new Trade(tradeId, tradeJson);
-				trades.add(trade);
+				trades.put(tradeIdEntry.getKey(), trade);
 			}
 			
 			return trades;

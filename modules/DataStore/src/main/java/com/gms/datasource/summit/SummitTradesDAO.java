@@ -27,7 +27,7 @@ public class SummitTradesDAO implements TradesDAO {
         sFile = new SWrapFile(documentPath);
     }
 
-	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
+	public Map<String, TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		/// String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where " + query;
@@ -35,13 +35,13 @@ public class SummitTradesDAO implements TradesDAO {
 		
 		try
 		{
-			List<TradeId> tradeIds = new Vector<TradeId>();
+			Map<String, TradeId> tradeIds = new HashMap<>();
 
 			List<List<String>> queryResult = etkWrap.executeDBQuery(sql);
 
 			for ( List<String> row : queryResult ){
 				TradeId tradeId = new TradeId(row.get(1),row.get(0),Integer.parseInt(row.get(2)));
-				tradeIds.add(tradeId);
+				tradeIds.put(tradeId.getId(), tradeId);
 			}
 			ObjectMapper mapper = new ObjectMapper();
 			return tradeIds;
@@ -55,28 +55,26 @@ public class SummitTradesDAO implements TradesDAO {
 		}
 	}
 	
-	public List<Trade> getTrades(List<TradeId> tradeIds){
+	public Map<String, Trade> getTrades(Map<String, TradeId> tradeIds){
 
 		try
 		{
-			List<Trade> trades = new Vector<Trade>();
+			Map<String, Trade> trades = new HashMap<>();
 
-			Vector<String> entities = new Vector<>();
+			Map<String, String> entities = new HashMap<>();
 
-			for (TradeId tradeId: tradeIds ) {
+			for (Map.Entry<String, TradeId> entry: tradeIds.entrySet() ) {
+				TradeId tradeId = entry.getValue();
 				String entity = etkWrap.executeEntityCreate(tradeId.getTradeType());
 				entity = entity.replace("<TradeId/>", "<TradeId>" + tradeId.getTradeId() + "</TradeId>");
-				entities.add(entity);
+				entities.put(tradeId.getId(), entity);
 			}
-			Vector<String> tradesStr = etkWrap.execute("s_base::EntityRead", entities);
-			int index = 0;
+			List<SWrapEToolKit.ETKResponse> tradesStr = etkWrap.execute("s_base::EntityRead", entities);
 
-			for (TradeId tradeId : tradeIds) {
-				String tradeStr = tradesStr.get(index);
-				index++;
-
-				JsonNode tradeNode = sJson.readXML(sXslt.applyEntList(tradeStr));
-				trades.add(new Trade(tradeId, tradeNode));
+			for (SWrapEToolKit.ETKResponse tradeResp : tradesStr) {
+				TradeId tradeId = tradeIds.get(tradeResp.getId());
+				JsonNode tradeNode = sJson.readXML(sXslt.applyEntList(tradeResp.getResponse()));
+				trades.put(tradeId.getId(), new Trade(tradeId, tradeNode));
 
 				sFile.writeStringToFile(tradeId.getTradeType() + "_" +
 							tradeId.getTradeId() + "_" +

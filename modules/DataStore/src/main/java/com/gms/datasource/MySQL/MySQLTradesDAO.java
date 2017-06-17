@@ -5,7 +5,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.sql.DataSource;
@@ -23,7 +25,7 @@ public class MySQLTradesDAO implements TradesDAO{
 	
 	private DataSource dataSource;
 	
-	public List<TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
+	public Map<String, TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeType, TradeId, TradeVersion from SummitTradeData where ?";
@@ -32,7 +34,7 @@ public class MySQLTradesDAO implements TradesDAO{
 		
 		try
 		{
-			List<TradeId> tradeIds = new Vector<TradeId>();
+			Map<String, TradeId> tradeIds = new HashMap<>();
 			
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -41,7 +43,7 @@ public class MySQLTradesDAO implements TradesDAO{
 			while(rs.next())
 			{
 				TradeId tradeId = new TradeId(rs.getString("TradeType"),rs.getString("TradeId"),rs.getInt("TradeVersion"));
-				tradeIds.add(tradeId);
+				tradeIds.put(tradeId.getId(), tradeId);
 			}
 			rs.close();
 			ps.close();
@@ -63,7 +65,7 @@ public class MySQLTradesDAO implements TradesDAO{
 		}
 	}
 	
-	public List<Trade> getTrades(List<TradeId> tradeIds) throws IOException, JsonProcessingException{
+	public Map<String, Trade> getTrades(Map<String, TradeId> tradeIds) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT tradeJSON from SummitTradeData where TradeType = ? and TradeId = ? and TradeVersion = ?";
@@ -72,11 +74,12 @@ public class MySQLTradesDAO implements TradesDAO{
 		
 		try
 		{
-			List<Trade> trades = new Vector<Trade>();
+			Map<String, Trade> trades = new HashMap<>();
 			
 			/// TBDAA - execute this in batchs of 1000
-			for (TradeId tradeId: tradeIds ) {
-				
+			for (Map.Entry<String, TradeId> tradeIdEntry: tradeIds.entrySet() ) {
+
+				TradeId tradeId = tradeIdEntry.getValue();
 				PreparedStatement ps = conn.prepareStatement(sql);
 				ps.setString(1,tradeId.getTradeType());
 				ps.setString(2,tradeId.getTradeId());
@@ -89,7 +92,7 @@ public class MySQLTradesDAO implements TradesDAO{
 				{
 					JsonNode tradeJson = jsonMapper.readTree(rs.getString("tradeJSON"));
 					Trade trade = new Trade(tradeId, tradeJson);
-					trades.add(trade);
+					trades.put(tradeIdEntry.getKey(), trade);
 				}
 				rs.close();
 				ps.close();

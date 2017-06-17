@@ -97,29 +97,29 @@ public class SWrapEToolKit {
 
     }
 
-    Vector<String> execute(String function, Vector<String> entities) throws SU_eToolkitAPIException {
-        List<Future<String>> futureList = new ArrayList<>();
-        Vector<String> results = new Vector<>();
+    List<ETKResponse> execute(String function, Map<String, String> entities) throws SU_eToolkitAPIException {
+        List<Future<ETKResponse>> futureList = new ArrayList<>();
+        List<ETKResponse> results = new Vector<>();
 
         int maxItems = 500;
         int items = 0;
         try {
 
-            for(String entity : entities) {
-                etkExecutor callableTask = new etkExecutor(function, entity);
-                Future<String> result = taskExecutor.submit(callableTask);
+            for(Map.Entry<String, String> entity : entities.entrySet()) {
+                etkExecutor callableTask = new etkExecutor(entity.getKey(), function, entity.getValue());
+                Future<ETKResponse> result = taskExecutor.submit(callableTask);
                 futureList.add(result);
                 items++;
                 if (items > maxItems) {
-                    for (Future<String> future : futureList) {
-                        results.add(stripResonseStr(future.get()));
+                    for (Future<ETKResponse> future : futureList) {
+                        results.add(future.get());
                     }
                     futureList.clear();
                     items = 0;
                 }
             }
-            for (Future<String> future : futureList) {
-                results.add(stripResonseStr(future.get()));
+            for (Future<ETKResponse> future : futureList) {
+                results.add(future.get());
             }
             futureList.clear();
         } catch (Exception e){
@@ -137,22 +137,59 @@ public class SWrapEToolKit {
         return entityStr.toString();
     }
 
-    private class etkExecutor implements Callable<String> {
+    public class ETKResponse{
+        String id;
+        String response;
+        Vector<String> messageList;
+        public ETKResponse(String id, String response, Vector<String> messageList){
+            this.id = id;
+            this.response = response;
+            this.messageList = messageList;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getResponse() {
+            return response;
+        }
+
+        public void setResponse(String response) {
+            this.response = response;
+        }
+
+        public Vector<String> getMessageList() {
+            return messageList;
+        }
+
+        public void setMessageList(Vector<String> messageList) {
+            this.messageList = messageList;
+        }
+    }
+
+    private class etkExecutor implements Callable<ETKResponse> {
+        String id;
         String function;
         String inXML;
-        public etkExecutor(String function, String inXML) {
+        public etkExecutor(String id, String function, String inXML) {
+            this.id = id;
             this.function = function;
             this.inXML = inXML;
         }
 
         @Override
-        public String call() throws Exception {
+        public ETKResponse call() throws Exception {
             StringBuffer outXMLResponse = new StringBuffer();
             Vector<String> messageList = new Vector<String>();
 
             try {
                 SWrapEToolKit_ws etkAPI = etkQueue.take();
-                String response = etkAPI.execute(function, inXML );
+                ETKResponse response = new ETKResponse(id, etkAPI.execute(function, inXML ), messageList);
                 etkQueue.put(etkAPI);
                 System.out.println("Totat ETK calls: " + totalCalls.incrementAndGet());
                 return response;

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by GMS on 05/03/2017.
@@ -28,12 +29,12 @@ public class TradesController {
     private TradesDAO tradesDAO;
 
     @RequestMapping(value="/trade/{id}", method= RequestMethod.GET)
-    public List<TradeId> getTrade(@PathVariable("id") String query) throws IOException, JsonProcessingException {
+    public Map<String, TradeId> getTrade(@PathVariable("id") String query) throws IOException, JsonProcessingException {
         return tradesDAO.getTradeIds("and TradeId in ('" + query + "')");
     }
 
     @RequestMapping(value="/trades", method=RequestMethod.GET)
-    public List<Trade> getTrades(@PathVariable List<TradeId> tradeIds) throws IOException, JsonProcessingException {
+    public Map<String, Trade> getTrades(@PathVariable Map<String, TradeId> tradeIds) throws IOException, JsonProcessingException {
         return tradesDAO.getTrades(tradeIds);
     }
 }

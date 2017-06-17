@@ -28,49 +28,63 @@ public class SummitMktsDAO implements MktsDAO {
     }
 
     @Override
-    public List<MktId> getMktIds(List<Trade> trades) throws IOException, JsonProcessingException {
-        List<MktId> mktIds = new ArrayList<>();
+    public Map<String, MktId> getMktIds(Map<String, Trade> trades) throws IOException, JsonProcessingException {
+        Map<String, MktId> mktIds = new HashMap<>();
 
-        for(Trade trade : trades){
-            JsonNode tradeJson = trade.getTradeJSON();
+        for(Map.Entry<String, Trade> trade : trades.entrySet()){
+            JsonNode tradeJson = trade.getValue().getTradeJSON();
             if ( tradeJson.has("MM") ){
                 JsonNode assetJson = tradeJson.path("MM").path("Assets").path("ASSET1");
-                String ccy = assetJson.path("Ccy").asText();
-                String dmIndex = assetJson.path("INTEREST_dmIndex").asText();
-                String subIndex = assetJson.path("SubIndex").asText();
 
-                if ( !dmIndex.equals("FIXED") ) {
-                    mktIds = addMkt(mktIds, new MktIdIR(ccy, dmIndex));
-                }
-                mktIds = addMkt(mktIds, new MktIdIR(ccy, subIndex));
+                addZeroMkt(mktIds, assetJson);
+            }
+
+            if (tradeJson.has("SWAP")){
+                JsonNode asset1Json = tradeJson.path("SWAP").path("Assets").path("ASSET1");
+                JsonNode asset2Json = tradeJson.path("SWAP").path("Assets").path("ASSET2");
+
+                addZeroMkt(mktIds, asset1Json);
+                addZeroMkt(mktIds, asset2Json);
+                addFXRateMkt(mktIds, asset1Json, asset2Json);
+                addFXVolMkt(mktIds, asset1Json, asset2Json);
             }
         }
 
         return mktIds;
     }
 
+
+
     @Override
-    public List<Mkt> getMkts(List<MktId> mktIds, String curveId, String asOfDate) throws IOException, JsonProcessingException {
+    public Map<String, Mkt> getMkts(Map<String, MktId> mktIds, String curveId, String asOfDate) throws IOException, JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
 
         try {
 
-            List<Mkt> mkts = new Vector<>();
+            Map<String, Mkt> mkts = new HashMap<>();
 
-            Vector<String> entities = new Vector<>();
-            for (MktId mktId : mktIds) {
-                entities.add(mktId.getRequest(curveId, asOfDate));
+            Map<String, String> entitiesZero = new HashMap<>();
+            Map<String, String> entitiesCOMM = new HashMap<>();
+            for (Map.Entry<String, MktId> mktId : mktIds.entrySet()) {
+                if ( mktId.getValue().getClassId() == "MktIdIR" ) {
+                    entitiesZero.put(mktId.getKey(), mktId.getValue().getRequest(curveId, asOfDate));
+                }
+
+                if ( mktId.getValue().getClassId() == "MktIdFXRate" ||
+                        mktId.getValue().getClassId() == "MktIdFXRate") {
+                    entitiesCOMM.put(mktId.getKey(), mktId.getValue().getRequest(curveId, asOfDate));
+                }
             }
-            int index = 0;
-            Vector<String> mktsStr = etkWrap.execute("s_market::GetZeroCurve", entities);
-            for (MktId mktId : mktIds ){
-                String mktStr = mktsStr.get(index);
-                Map<String, String> points = domWrapper.convertZeroResult(mktsStr.get(index));
 
-                MktZeroCurve mkt = new MktZeroCurve((MktIdIR)mktIds.get(index), points);
-                index ++;
-                mkts.add(mkt);
+            int index = 0;
+            List<SWrapEToolKit.ETKResponse> mktsStr = etkWrap.execute("s_market::GetZeroCurve", entitiesZero);
+            for (SWrapEToolKit.ETKResponse mktResp : mktsStr ){
+                Map<String, String> points = domWrapper.convertZeroResult(mktResp.getResponse());
+
+                MktId mktId = mktIds.get(mktResp.getId());
+                MktZeroCurve mkt = new MktZeroCurve((MktIdIR)mktId, points);
+                mkts.put(mktResp.getId(), mkt);
 
                 sFile.writeStringToFile(mktId.getId(curveId, asOfDate) + ".json",
                         sJson.writeJSON(mkt));
@@ -86,20 +100,50 @@ public class SummitMktsDAO implements MktsDAO {
 
     }
 
+    public Map<String, MktId> addZeroMkt(Map<String, MktId> mktIds, JsonNode assetJson) {
+        String ccy = assetJson.path("Ccy").asText();
+        String dmIndex = assetJson.path("INTEREST_dmIndex").asText();
+        String subIndex = assetJson.path("SubIndex").asText();
 
-    public List<MktId> addMkt(List<MktId> mkts, MktId mkt){
+        if ( !dmIndex.equals("FIXED") ) {
+            mktIds = addMkt(mktIds, new MktIdIR(ccy, dmIndex));
+        }
+        mktIds = addMkt(mktIds, new MktIdIR(ccy, subIndex));
+
+        return mktIds;
+    }
+
+    public Map<String, MktId> addFXRateMkt(Map<String, MktId> mktIds, JsonNode asset1Json, JsonNode asset2Json) {
+        String ccy1 = asset1Json.path("Ccy").asText();
+        String ccy2 = asset1Json.path("Ccy").asText();
+
+        mktIds = addMkt(mktIds, new MktIdFXRate(ccy1, ccy2));
+
+        return mktIds;
+    }
+
+    public Map<String, MktId> addFXVolMkt(Map<String, MktId> mktIds, JsonNode asset1Json, JsonNode asset2Json) {
+        String ccy1 = asset1Json.path("Ccy").asText();
+        String ccy2 = asset1Json.path("Ccy").asText();
+
+        mktIds = addMkt(mktIds, new MktIdFXVol(ccy1, ccy2));
+
+        return mktIds;
+    }
+
+    public Map<String, MktId> addMkt(Map<String, MktId> mktIds, MktId mkt){
         boolean found = false;
-        for (MktId it : mkts ){
-            if ( it.getRequest("", "").equals(mkt.getRequest("", "")) ){
+        for (Map.Entry<String, MktId> it : mktIds.entrySet() ){
+            if ( it.getValue().getRequest("", "").equals(mkt.getRequest("", "")) ){
                 found = true;
                 break;
             }
         }
 
         if ( ! found ) {
-            mkts.add(mkt);
+            mktIds.put(mkt.getId("", ""), mkt);
         }
 
-        return mkts;
+        return mktIds;
     }
 }

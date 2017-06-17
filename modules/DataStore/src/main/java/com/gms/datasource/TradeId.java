@@ -21,7 +21,10 @@ public class TradeId {
 		TradeId = tradeId;
 		TradeVersion = tradeVersion;
 	}
-	
+
+	public String getId(){
+		return "TRADE_" + getTradeType() + "_" + getTradeId() + "_" + getTradeVersion();
+	}
 	/**
 	 * @return the tradeId
 	 */

@@ -24,9 +24,9 @@ public class RESTTester extends SpringBootServletInitializer {
             ((ConfigurableApplicationContext)appContext).registerShutdownHook();
         }
 
-        TradesDAO trades = appContext.getBean("tradesDAO",TradesDAO.class);
-        MktsDAO mkts = appContext.getBean("mktsDAO", MktsDAO.class);
-        AsOfDatesDAO asOfDates = appContext.getBean("asOfDates", AsOfDatesDAO.class);
+        DAOTrades trades = appContext.getBean("tradesDAO",DAOTrades.class);
+        DAOMkts mkts = appContext.getBean("mktsDAO", DAOMkts.class);
+        DAOAsOfDates asOfDates = appContext.getBean("asOfDates", DAOAsOfDates.class);
 
         try {
             List<TradeId> tradeIdsList = trades.getTradeIds(" and dmOwnerTable in ('SWAP', 'MM', 'MUST_TR') and TradeId in ('11388L1') ");

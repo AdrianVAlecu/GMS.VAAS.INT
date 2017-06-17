@@ -12,14 +12,14 @@ import java.util.*;
 /**
  * Created by gms on 5/30/2017.
  */
-public class SummitMktsDAO implements MktsDAO {
+public class SummitDAOMkts implements DAOMkts {
 
     private SWrapEToolKit etkWrap;
     private SWrapDOM domWrapper;
     private SWrapJSON sJson;
     private SWrapFile sFile;
 
-    public SummitMktsDAO(SWrapEToolKit etkWrap, String documentPath) {
+    public SummitDAOMkts(SWrapEToolKit etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
 
         domWrapper = new SWrapDOM();

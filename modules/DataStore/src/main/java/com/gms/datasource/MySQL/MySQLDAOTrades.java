@@ -6,9 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.sql.DataSource;
 
@@ -19,9 +17,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
-import com.gms.datasource.TradesDAO;
+import com.gms.datasource.DAOTrades;
 
-public class MySQLTradesDAO implements TradesDAO{
+public class MySQLDAOTrades implements DAOTrades {
 	
 	private DataSource dataSource;
 	

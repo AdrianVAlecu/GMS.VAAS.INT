@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by gms on 5/27/2017.
  */
-public interface AsOfDatesDAO {
+public interface DAOAsOfDates {
     List<String> getValues() throws SU_eToolkitAPIException, InterruptedException;
 
 }

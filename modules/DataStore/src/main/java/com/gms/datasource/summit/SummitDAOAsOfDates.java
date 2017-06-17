@@ -1,6 +1,6 @@
 package com.gms.datasource.summit;
 
-import com.gms.datasource.AsOfDatesDAO;
+import com.gms.datasource.DAOAsOfDates;
 import org.apache.commons.io.FileUtils;
 import summit.etkapi_ws.SU_eToolkitAPIException;
 
@@ -14,12 +14,12 @@ import java.util.Map;
 /**
  * Created by gms on 5/27/2017.
  */
-public class SummitAsOfDatesDAO implements AsOfDatesDAO {
+public class SummitDAOAsOfDates implements DAOAsOfDates {
     private SWrapEToolKit etkWrap;
     public Map<String, String> dates;
     private String documentPath;
 
-    SummitAsOfDatesDAO(SWrapEToolKit etkWrap, String documentPath)  {
+    SummitDAOAsOfDates(SWrapEToolKit etkWrap, String documentPath)  {
         this.etkWrap = etkWrap;
         this.documentPath = documentPath;
 

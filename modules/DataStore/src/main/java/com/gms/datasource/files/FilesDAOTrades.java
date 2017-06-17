@@ -2,20 +2,18 @@ package com.gms.datasource.files;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.gms.datasource.DAOTrades;
 import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
-import com.gms.datasource.TradesDAO;
 
-public class FilesTradesDAO implements TradesDAO {
+public class FilesDAOTrades implements DAOTrades {
     	public Map<String, TradeId> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is TradeId, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON

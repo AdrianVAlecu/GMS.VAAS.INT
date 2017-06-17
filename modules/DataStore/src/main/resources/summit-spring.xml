@@ -15,7 +15,7 @@
         <property name="waitForTasksToCompleteOnShutdown" value="true" />
     </bean>
 
-    <!-- <bean name="tradesDAO" class="com.gms.datasource.files.FilesTradesDAO"> -->
+    <!-- <bean name="tradesDAO" clacom.gms.datasource.files.FilesDAOTradessDAO"> -->
     <bean name="etkImpl"            class="summit.etkapi_ws.SU_eToolkitAPI_Impl" />
     <bean name="etkAPI"             class="com.gms.datasource.summit.SWrapEToolKit_ws" >
         <property name="etkAPIClass"    ref="etkImpl" />
@@ -37,17 +37,17 @@
         <constructor-arg index="3" ref="taskExecutor" />
     </bean>
 
-    <bean name="tradesDAO" class="com.gms.datasource.summit.SummitTradesDAO">
+    <bean name="tradesDAO" class="com.gms.datasource.summit.SummitDAOTrades">
         <constructor-arg index="0" ref="etkWrap" />
         <constructor-arg index="1" value="${documentPath}" />
     </bean>
 
-    <bean name="mktsDAO" class="com.gms.datasource.summit.SummitMktsDAO">
+    <bean name="mktsDAO" class="com.gms.datasource.summit.SummitDAOMkts">
         <constructor-arg index="0" ref="etkWrap" />
         <constructor-arg index="1" value="${documentPath}" />
     </bean>
 
-    <bean name="asOfDates" class="com.gms.datasource.summit.SummitAsOfDatesDAO">
+    <bean name="asOfDates" class="com.gms.datasource.summit.SummitDAOAsOfDates">
         <constructor-arg index="0" ref="etkWrap" />
         <constructor-arg index="1" value="${documentPath}" />
     </bean>

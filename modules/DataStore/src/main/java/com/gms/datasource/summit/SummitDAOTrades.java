@@ -10,16 +10,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.Trade;
 import com.gms.datasource.TradeId;
-import com.gms.datasource.TradesDAO;
+import com.gms.datasource.DAOTrades;
 
-public class SummitTradesDAO implements TradesDAO {
+public class SummitDAOTrades implements DAOTrades {
     
 	private SWrapEToolKit etkWrap;
 	private SWrapXSLT sXslt;
 	private SWrapJSON sJson;
 	private SWrapFile sFile;
 
-	public SummitTradesDAO(SWrapEToolKit etkWrap, String documentPath) {
+	public SummitDAOTrades(SWrapEToolKit etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
 
         sXslt = new SWrapXSLT();

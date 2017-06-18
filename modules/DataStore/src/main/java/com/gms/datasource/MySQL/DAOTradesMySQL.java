@@ -19,7 +19,7 @@ import com.gms.datasource.IdTrade;
 import com.gms.datasource.Trade;
 import com.gms.datasource.DAOTrades;
 
-public class MySQLDAOTrades implements DAOTrades {
+public class DAOTradesMySQL implements DAOTrades {
 	
 	private DataSource dataSource;
 	

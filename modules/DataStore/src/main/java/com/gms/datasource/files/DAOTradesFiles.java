@@ -13,7 +13,7 @@ import com.gms.datasource.DAOTrades;
 import com.gms.datasource.Trade;
 import com.gms.datasource.IdTrade;
 
-public class FilesDAOTrades implements DAOTrades {
+public class DAOTradesFiles implements DAOTrades {
     	public Map<String, IdTrade> getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON

@@ -12,14 +12,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.Trade;
 import com.gms.datasource.DAOTrades;
 
-public class SummitDAOTrades implements DAOTrades {
+public class DAOTradesSummit implements DAOTrades {
     
 	private SWrapEToolKit etkWrap;
 	private SWrapXSLT sXslt;
 	private SWrapJSON sJson;
 	private SWrapFile sFile;
 
-	public SummitDAOTrades(SWrapEToolKit etkWrap, String documentPath) {
+	public DAOTradesSummit(SWrapEToolKit etkWrap, String documentPath) {
         this.etkWrap = etkWrap;
 
         sXslt = new SWrapXSLT();
@@ -31,7 +31,7 @@ public class SummitDAOTrades implements DAOTrades {
 		
 		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		/// String sql = "SELECT TradeType, IdTrade, TradeVersion from SummitTradeData where " + query;
-		String sql = "SELECT IdTrade, dmOwnerTable, Audit_Version from dmENV where Audit_Current = 'Y' " + query;
+		String sql = "SELECT TradeId, dmOwnerTable, Audit_Version from dmENV where Audit_Current = 'Y' " + query;
 		
 		try
 		{

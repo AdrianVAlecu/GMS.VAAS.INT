@@ -14,12 +14,12 @@ import java.util.Map;
 /**
  * Created by gms on 5/27/2017.
  */
-public class SummitDAOAsOfDates implements DAOAsOfDates {
+public class DAOAsOfDatesSummit implements DAOAsOfDates {
     private SWrapEToolKit etkWrap;
     public Map<String, String> dates;
     private String documentPath;
 
-    SummitDAOAsOfDates(SWrapEToolKit etkWrap, String documentPath)  {
+    DAOAsOfDatesSummit(SWrapEToolKit etkWrap, String documentPath)  {
         this.etkWrap = etkWrap;
         this.documentPath = documentPath;
 

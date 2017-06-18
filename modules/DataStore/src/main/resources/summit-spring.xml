@@ -37,17 +37,17 @@
         <constructor-arg index="3" ref="taskExecutor" />
     </bean>
 
-    <bean name="tradesDAO" class="com.gms.datasource.summit.SummitDAOTrades">
+    <bean name="tradesDAO" class="com.gms.datasource.summit.DAOTradesSummit">
         <constructor-arg index="0" ref="etkWrap" />
         <constructor-arg index="1" value="${documentPath}" />
     </bean>
 
-    <bean name="mktsDAO" class="com.gms.datasource.summit.SummitDAOMkts">
+    <bean name="mktsDAO" class="com.gms.datasource.summit.DAOMktsSummit">
         <constructor-arg index="0" ref="etkWrap" />
         <constructor-arg index="1" value="${documentPath}" />
     </bean>
 
-    <bean name="asOfDates" class="com.gms.datasource.summit.SummitDAOAsOfDates">
+    <bean name="asOfDates" class="com.gms.datasource.summit.DAOAsOfDatesSummit">
         <constructor-arg index="0" ref="etkWrap" />
         <constructor-arg index="1" value="${documentPath}" />
     </bean>

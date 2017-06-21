@@ -1,11 +1,11 @@
 package com.gms.datasource.summit;
 
+import org.springframework.core.io.ClassPathResource;
+
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.File;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 
 /**
  * Created by gms on 6/3/2017.
@@ -16,12 +16,18 @@ public class SWrapXSLT {
 
     public SWrapXSLT(){
         try {
-            File xsltFile = new File(getClass().getClassLoader().
-                    getResource("Stylesheet_EntList.xsl").getFile());
-            StreamSource entListXslt = new StreamSource(xsltFile.getAbsolutePath());
+            InputStream xsltFile = new ClassPathResource("Stylesheet_EntList.xsl").getInputStream();
+            StreamSource entListXslt = new StreamSource(xsltFile);
+            //File xsltFile = new File(getClass().getClassLoader().
+            //        getResource("Stylesheet_EntList.xsl").getFile());
+            //StreamSource entListXslt = new StreamSource(xsltFile.getAbsolutePath());
+            //StreamSource entListXslt = new StreamSource(getClass().getClassLoader().
+            //        getResourceAsStream("Stylesheet_EntList.xsl"));
+
             TransformerFactory transFactory = TransformerFactory.newInstance();
             entListTrans = transFactory.newTransformer(entListXslt);
-        } catch (TransformerConfigurationException e) {
+        } catch (TransformerConfigurationException | IOException e) {
+        //} catch (TransformerConfigurationException e) {
             e.printStackTrace();
         }
     }

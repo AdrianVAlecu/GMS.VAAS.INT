@@ -29,6 +29,7 @@ dependencies {
 
 
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile group: 'javax.servlet', name: 'jstl', version: '1.2'
 
 }
 

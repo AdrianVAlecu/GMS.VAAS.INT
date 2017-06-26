@@ -16,13 +16,23 @@ public class SWrapXSLT {
 
     public SWrapXSLT(){
         try {
-            InputStream xsltFile = new ClassPathResource("Stylesheet_EntList.xsl").getInputStream();
-            StreamSource entListXslt = new StreamSource(xsltFile);
-            //File xsltFile = new File(getClass().getClassLoader().
-            //        getResource("Stylesheet_EntList.xsl").getFile());
-            //StreamSource entListXslt = new StreamSource(xsltFile.getAbsolutePath());
-            //StreamSource entListXslt = new StreamSource(getClass().getClassLoader().
-            //        getResourceAsStream("Stylesheet_EntList.xsl"));
+            StreamSource entListXslt = null;
+
+            InputStream xsltInput = new ClassPathResource("Stylesheet_EntList.xsl").getInputStream();
+            if ( xsltInput.available() == 0 ) {
+                entListXslt = new StreamSource(xsltInput);
+            }
+            else {
+                File xsltFile = new File(getClass().getClassLoader().
+                        getResource("Stylesheet_EntList.xsl").getFile());
+                if ( xsltFile.exists() ) {
+                    entListXslt = new StreamSource(xsltFile.getAbsolutePath());
+                }
+                else {
+                    entListXslt = new StreamSource(getClass().getClassLoader().
+                            getResourceAsStream("Stylesheet_EntList.xsl"));
+                }
+            }
 
             TransformerFactory transFactory = TransformerFactory.newInstance();
             entListTrans = transFactory.newTransformer(entListXslt);

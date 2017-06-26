@@ -4,6 +4,8 @@ package com.gms.datasource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -17,6 +19,7 @@ import java.util.Map;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="classpath:summit-spring.xml")
+@ImportResource({"classpath:Stylesheet_EntList.xsl", "classpath:Stylesheet_Identity.xsl"})
 public class DAOTradesTest {
 
     @Resource

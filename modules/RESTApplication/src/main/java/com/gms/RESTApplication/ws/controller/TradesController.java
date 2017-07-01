@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.IdTrade;
 import com.gms.datasource.Trade;
 import com.gms.datasource.DAOTrades;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
@@ -91,10 +92,10 @@ public class TradesController {
 
     public TradesController(){
         ScheduledExecutorService healthPool = Executors.newScheduledThreadPool(1);
-        healthPool.scheduleWithFixedDelay(new CheckThredsHealth(), 0, 1, TimeUnit.SECONDS);
-
         scheduledPool = Executors.newScheduledThreadPool(4);
         handle = scheduledPool.scheduleWithFixedDelay(new SendStateRunnable(), 0, 5, TimeUnit.SECONDS);
+
+        healthPool.scheduleWithFixedDelay(new CheckThredsHealth(), 0, 1, TimeUnit.SECONDS);
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
@@ -124,7 +125,11 @@ public class TradesController {
         ModelAndView mv = new ModelAndView("index");
         Long id = new Long(input.getQuery().hashCode());
         jobs.addJob(new JobStatus(input));
-        //mv.addObject("jobs", jobs);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        String jobsStr = mapper.writeValueAsString(jobs);
+
+        mv.addObject("jobs", jobsStr);
         return mv;
     }
 }

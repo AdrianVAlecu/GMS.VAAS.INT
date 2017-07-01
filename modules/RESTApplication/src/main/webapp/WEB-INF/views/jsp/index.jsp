@@ -9,6 +9,26 @@
     <head>
         <script src="jquery.min.js"></script>
         <script>
+            var refreshTable = function (jobs) {
+                if ( typeof jobs != 'undefined' && jobs ) {
+                    console.log("Incomming update size: " + jobs.allJobs.length);
+                    $(document).ready(function() {
+                        $('#allJobs').replaceWith('<div id="allJobs"></div>');
+
+                        var table = $('<table/>').appendTo($('#allJobs'));
+                        $(jobs.allJobs).each(function(i, jobStatus) {
+                            $('<tr/>').appendTo(table)
+                                .append($('<td/>').text(jobStatus.id))
+                                .append($('<td/>').text(jobStatus.inputParams.query));
+                        });
+                    });
+                };
+            };
+
+            var buildTable = function() {
+                refreshTable(${jobs});
+            };
+
             var connect = function () {
                 var source = new EventSource('/register');
 
@@ -20,16 +40,7 @@
                 // Update the state when ever a message is sent
                 source.addEventListener('message', function (e) {
                     var jobs = JSON.parse(e.data);
-                    console.log("Incomming update size: " + jobs.allJobs.length);
-                    $(document).ready(function() {
-                        var table = $('<table/>').appendTo($('#allJobs'));
-                        $(jobs.allJobs).each(function(i, jobStatus) {
-                            $('<tr/>').appendTo(table)
-                                .append($('<td/>').text(jobStatus.id))
-                                .append($('<td/>').text(jobStatus.inputParams.query));
-                        });
-                    });
-
+                    refreshTable(jobs);
                 }, false);
 
                 source.addEventListener('error', function(e) {
@@ -44,7 +55,7 @@
     </head>
 <header><title>GMS Vass test</title>
 
-<body onload="connect();">
+<body onload="connect();buildTable();">
     <h2>This is the start page for GMS Vaas HehE</h2>
 
     <form action="<c:url value='addJob' />" method="post" name="GMSAction">
@@ -53,11 +64,6 @@
     </form>
 
     <div id="allJobs"></div>
-
-    <c:forEach var="entry" items="${requests}">
-        Name: ${entry.key} <br/>
-        Value: ${entry.value} <br/>
-    </c:forEach>
 
 </body>
 

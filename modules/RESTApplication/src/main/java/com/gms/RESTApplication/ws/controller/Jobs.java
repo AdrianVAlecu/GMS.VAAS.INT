@@ -14,7 +14,7 @@ public class Jobs {
     private final List<JobStatus> allJobs = new LinkedList<>();
 
     public Long addJob(JobStatus jobStatus) {
-        long id = x+((long)r.nextDouble()*(y-x));
+        long id = x+((long)(r.nextDouble()*(y-x)));
         jobStatus.setId(id);
         allJobs.add(jobStatus);
         return id;

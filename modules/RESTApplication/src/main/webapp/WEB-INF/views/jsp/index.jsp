@@ -30,7 +30,7 @@
             };
 
             var connect = function () {
-                var source = new EventSource('/register');
+                var source = new EventSource('/registerJobsEmitter');
 
                 // Handle correct opening of connection
                 source.addEventListener('open', function (e) {

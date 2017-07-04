@@ -25,19 +25,11 @@ import java.util.Map;
 @RequestMapping(value="/")
 @ImportResource({"classpath:summit-spring.xml"})
 @PropertySource(value={"classpath:summit.app.properties"})
-public class TradesController {
-    final static Logger log = Logger.getLogger(TradesController.class);
-
-    private final Jobs jobs = new Jobs();
-    SseEmitterWrap sseEmitterJobs = new SseEmitterWrap(jobs);
+public class ControllerEtk {
+    final static Logger log = Logger.getLogger(ControllerEtk.class);
 
     @Resource
     private DAOTrades DAOTrades;
-
-    @RequestMapping(path = "/registerJobsEmitter", method = RequestMethod.GET)
-    public SseEmitter register() throws IOException {
-        return sseEmitterJobs.addEmitter();
-    }
 
     @RequestMapping(value="/trade/{id}", method= RequestMethod.GET)
     public Map<String, IdTrade> getTrade(@PathVariable("id") String query) throws IOException, JsonProcessingException {
@@ -49,15 +41,4 @@ public class TradesController {
         return DAOTrades.getTrades(tradeIds);
     }
 
-    @RequestMapping(value="/addJob", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody ModelAndView testPost(@ModelAttribute("query") JobInput input) throws IOException {
-        ModelAndView mv = new ModelAndView("index");
-        jobs.addJob(new JobStatus(input));
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        String jobsStr = mapper.writeValueAsString(jobs);
-
-        mv.addObject("jobs", jobsStr);
-        return mv;
-    }
 }

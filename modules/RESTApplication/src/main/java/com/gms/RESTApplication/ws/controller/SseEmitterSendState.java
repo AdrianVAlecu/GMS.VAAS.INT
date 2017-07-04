@@ -22,7 +22,7 @@ class SseEmitterSendState implements Runnable {
     }
 
     public void run() {
-        TradesController.log.info("Sending message emitters: " + this.sseEmitters.size());
+        ControllerEtk.log.info("Sending message emitters: " + this.sseEmitters.size());
 
         synchronized (this.sseEmitters) {
             for (SseEmitter emitter : this.sseEmitters) {
@@ -33,7 +33,7 @@ class SseEmitterSendState implements Runnable {
                     emitter.send(jobsStr, MediaType.APPLICATION_JSON);
                 } catch (IOException e) {
                     this.sseEmitters.remove(emitter);
-                    TradesController.log.info("IOException - removing jobs emitters: " + this.sseEmitters.size());
+                    ControllerEtk.log.info("IOException - removing jobs emitters: " + this.sseEmitters.size());
                 }
             }
         }

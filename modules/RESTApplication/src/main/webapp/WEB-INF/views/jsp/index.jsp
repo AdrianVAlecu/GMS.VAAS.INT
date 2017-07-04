@@ -8,6 +8,7 @@
 <html lang="en">
     <head>
         <script src="jquery.min.js"></script>
+        <script src="table_floating_header.js"></script>
         <script>
             var refreshTable = function (jobs) {
                 if ( typeof jobs != 'undefined' && jobs ) {
@@ -15,11 +16,20 @@
                     $(document).ready(function() {
                         $('#allJobs').replaceWith('<div id="allJobs"></div>');
 
-                        var table = $('<table/>').appendTo($('#allJobs'));
+                        var table = $('<table border="2" cellpadding="0" cellspacing="0"/>').appendTo($('#allJobs'));
+                        $('<thead/>').appendTo(table)
+                            .append($('<tr/>'))
+                                .append($('<th/>').text('Identifier'))
+                                .append($('<th/>').text('Status'))
+                                .append($('<th/>').text('ExecutionInfo'))
+                                .append($('<th/>').text('Query'));
                         $(jobs.allJobs).each(function(i, jobStatus) {
-                            $('<tr/>').appendTo(table)
-                                .append($('<td/>').text(jobStatus.id))
-                                .append($('<td/>').text(jobStatus.inputParams.query));
+                            $('<tbody/>').appendTo(table)
+                                .append($('<tr/>'))
+                                    .append($('<td/>').text(jobStatus.id))
+                                    .append($('<td/>').text(jobStatus.status))
+                                    .append($('<td/>').text(jobStatus.jobInfo))
+                                    .append($('<td/>').text(jobStatus.inputParams.query));
                         });
                     });
                 };
@@ -63,7 +73,23 @@
         <input id = "WorkflowNew" type="submit" value="StartWorkflow(post)">
     </form>
 
-    <div id="allJobs"></div>
+    <style>
+    table { border-collor: #00F; }
+    table td { border-color: #ccc; }
+    </style>
+
+    <div id="allJobs">
+        <table border="2" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Identifier</th>
+                    <th>Status</th>
+                    <th>ExecutionInfo</th>
+                    <th>Query</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
 
 </body>
 

@@ -6,9 +6,24 @@ package com.gms.RESTApplication.ws.controller;
 class JobStatus {
     private Long id;
     private JobInput inputParams;
+    private String status;
+    private String jobInfo;
+
+    public enum JobStatusEnum {
+        Running("Running"),
+        FAILED("FAILED"),
+        ERROR("ERROR"),
+        SUCCESS("Success");
+
+        private String name = "";
+        JobStatusEnum(String name) { this.name = name; }
+        public String toString(){ return name; }
+    }
 
     public JobStatus(JobInput input) {
         this.inputParams = input;
+        status = JobStatusEnum.Running.toString();
+        jobInfo = "Etk.queryTrades";
     }
 
     public void setId(Long id) {

@@ -11,7 +11,7 @@ import java.util.concurrent.*;
  * Created by gms on 7/1/2017.
  */
 class SseEmitterWrap {
-    final static Logger log = Logger.getLogger(TradesController.class);
+    final static Logger log = Logger.getLogger(ControllerEtk.class);
 
     private final List<SseEmitter> sseEmitters = new LinkedList<>();
 
@@ -34,7 +34,7 @@ class SseEmitterWrap {
         this.emitItem = emitItem;
         ScheduledExecutorService healthPool = Executors.newScheduledThreadPool(1);
         sseEmitterPoolExecutor = Executors.newScheduledThreadPool(1);
-        sseEmitterHandler = sseEmitterPoolExecutor.scheduleWithFixedDelay(new SseEmitterSendState(sseEmitters, emitItem), 0, 5, TimeUnit.SECONDS);
+        sseEmitterHandler = sseEmitterPoolExecutor.scheduleWithFixedDelay(new SseEmitterSendState(sseEmitters, emitItem), 0, 150, TimeUnit.SECONDS);
 
         healthPool.scheduleWithFixedDelay(new WrapHealth(), 0, 1, TimeUnit.SECONDS);
     }
@@ -44,7 +44,7 @@ class SseEmitterWrap {
             try {
                 sseEmitterHandler.get();
             } catch (ExecutionException | InterruptedException e) {
-                sseEmitterHandler = sseEmitterPoolExecutor.scheduleWithFixedDelay(new SseEmitterSendState(sseEmitters, emitItem), 0, 5, TimeUnit.SECONDS);
+                sseEmitterHandler = sseEmitterPoolExecutor.scheduleWithFixedDelay(new SseEmitterSendState(sseEmitters, emitItem), 0, 150, TimeUnit.SECONDS);
             }
         }
     }

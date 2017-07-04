@@ -20,7 +20,7 @@ class SseEmitterRemove implements Runnable {
         synchronized (this.sseEmitters) {
             if (this.sseEmitters.contains(emitter)) {
                 this.sseEmitters.remove(emitter);
-                TradesController.log.info("Disconnecting: emitters: " + this.sseEmitters.size());
+                ControllerEtk.log.info("Disconnecting: emitters: " + this.sseEmitters.size());
             }
         }
     }

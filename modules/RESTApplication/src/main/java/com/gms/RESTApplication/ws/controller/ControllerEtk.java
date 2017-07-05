@@ -22,7 +22,7 @@ import java.util.Map;
  * Created by GMS on 05/03/2017.
  */
 @RestController
-@RequestMapping(value="/")
+@RequestMapping(value="/etk/")
 @ImportResource({"classpath:summit-spring.xml"})
 @PropertySource(value={"classpath:summit.app.properties"})
 public class ControllerEtk {
@@ -31,9 +31,10 @@ public class ControllerEtk {
     @Resource
     private DAOTrades DAOTrades;
 
-    @RequestMapping(value="/trade/{id}", method= RequestMethod.GET)
+    @RequestMapping(value="/tradeIds/{id}", method= RequestMethod.GET)
     public Map<String, IdTrade> getTrade(@PathVariable("id") String query) throws IOException, JsonProcessingException {
-        return DAOTrades.getTradeIds("and TradeId in ('" + query + "')");
+        query = query.replaceAll("_", " ");
+        return DAOTrades.getTradeIds(query);
     }
 
     @RequestMapping(value="/trades", method=RequestMethod.GET)

@@ -3,16 +3,26 @@ package com.gms.RESTApplication.ws.controller;
 /**
  * Created by gms on 6/26/2017.
  */
-class JobStatus {
+public class JobStatus {
     private Long id;
     private JobInput inputParams;
-    private String status;
+
+    public void setStatus(JobStatusEnum status) {
+        this.status = status;
+    }
+
+    public void setJobInfo(String jobInfo) {
+        this.jobInfo = jobInfo;
+    }
+
+    private JobStatusEnum status;
     private String jobInfo;
 
     public enum JobStatusEnum {
         Running("Running"),
         FAILED("FAILED"),
         ERROR("ERROR"),
+        EMPTY("EMPTY"),
         SUCCESS("Success");
 
         private String name = "";
@@ -22,8 +32,8 @@ class JobStatus {
 
     public JobStatus(JobInput input) {
         this.inputParams = input;
-        status = JobStatusEnum.Running.toString();
-        jobInfo = "Etk.queryTrades";
+        status = JobStatusEnum.Running;
+        jobInfo = "Submitted";
     }
 
     public void setId(Long id) {

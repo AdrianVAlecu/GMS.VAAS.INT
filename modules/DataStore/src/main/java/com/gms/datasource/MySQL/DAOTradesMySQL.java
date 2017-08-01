@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gms.datasource.IdTrade;
+import com.gms.datasource.IdTrades;
 import com.gms.datasource.Trade;
 import com.gms.datasource.DAOTrades;
 
@@ -23,7 +24,7 @@ public class DAOTradesMySQL implements DAOTrades {
 	
 	private DataSource dataSource;
 	
-	public Map<String, IdTrade> getTradeIds(String query) throws IOException, JsonProcessingException{
+	public IdTrades getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeType, IdTrade, TradeVersion from SummitTradeData where ?";
@@ -32,7 +33,7 @@ public class DAOTradesMySQL implements DAOTrades {
 		
 		try
 		{
-			Map<String, IdTrade> tradeIds = new HashMap<>();
+			IdTrades tradeIds = new IdTrades();
 			
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -41,7 +42,7 @@ public class DAOTradesMySQL implements DAOTrades {
 			while(rs.next())
 			{
 				IdTrade idTrade = new IdTrade(rs.getString("TradeType"),rs.getString("IdTrade"),rs.getInt("TradeVersion"));
-				tradeIds.put(idTrade.getId(), idTrade);
+				tradeIds.add(idTrade);
 			}
 			rs.close();
 			ps.close();

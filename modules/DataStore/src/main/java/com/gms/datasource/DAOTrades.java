@@ -7,6 +7,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface DAOTrades {
 
-	public Map<String, IdTrade> getTradeIds(String query) throws IOException, JsonProcessingException;
+	public IdTrades getTradeIds(String query) throws IOException, JsonProcessingException;
 	public Map<String, Trade> getTrades(Map<String, IdTrade> tradeIds) throws IOException, JsonProcessingException;
 }

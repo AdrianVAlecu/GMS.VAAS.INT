@@ -28,9 +28,9 @@ public class DAOTradesTest {
     @Test
     public void getTradeIds() {
         try {
-            Map<String, IdTrade> tradeIds = DAOTrades.getTradeIds("");
+            IdTrades tradeIds = DAOTrades.getTradeIds("");
             Assert.assertNotNull(tradeIds);
-            Assert.assertTrue(tradeIds.size() > 0 );
+            Assert.assertTrue(tradeIds.getIdTrades().size() > 0 );
         }catch(IOException e) {
             e.printStackTrace();
         }

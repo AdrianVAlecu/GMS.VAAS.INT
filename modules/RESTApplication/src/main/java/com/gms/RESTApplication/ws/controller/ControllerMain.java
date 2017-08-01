@@ -3,6 +3,7 @@ package com.gms.RESTApplication.ws.controller;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gms.RESTApplication.ws.RESTWorkflow;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -38,10 +39,13 @@ public class ControllerMain {
     public @ResponseBody
     ModelAndView testPost(@ModelAttribute("query") JobInput input) throws IOException {
         ModelAndView mv = new ModelAndView("index");
-        jobs.addJob(new JobStatus(input));
+        JobStatus newJob = new JobStatus(input);
+        jobs.addJob(newJob);
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         String jobsStr = mapper.writeValueAsString(jobs);
+
+        RESTWorkflow workflow = new RESTWorkflow(newJob);
 
         mv.addObject("jobs", jobsStr);
         return mv;

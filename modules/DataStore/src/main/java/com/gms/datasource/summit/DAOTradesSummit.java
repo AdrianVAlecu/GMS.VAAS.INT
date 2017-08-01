@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.gms.datasource.IdTrade;
+import com.gms.datasource.IdTrades;
 import summit.etkapi_ws.SU_eToolkitAPIException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,7 +28,7 @@ public class DAOTradesSummit implements DAOTrades {
         sFile = new SWrapFile(documentPath);
     }
 
-	public Map<String, IdTrade> getTradeIds(String query) throws IOException, JsonProcessingException{
+	public IdTrades getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		/// String sql = "SELECT TradeType, IdTrade, TradeVersion from SummitTradeData where " + query;
@@ -35,13 +36,13 @@ public class DAOTradesSummit implements DAOTrades {
 		
 		try
 		{
-			Map<String, IdTrade> tradeIds = new HashMap<>();
+			IdTrades tradeIds = new IdTrades();
 
 			List<List<String>> queryResult = etkWrap.executeDBQuery(sql);
 
 			for ( List<String> row : queryResult ){
 				IdTrade idTrade = new IdTrade(row.get(1),row.get(0),Integer.parseInt(row.get(2)));
-				tradeIds.put(idTrade.getId(), idTrade);
+				tradeIds.add(idTrade);
 			}
 			ObjectMapper mapper = new ObjectMapper();
 			return tradeIds;

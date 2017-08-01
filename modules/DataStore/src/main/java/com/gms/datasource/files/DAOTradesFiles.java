@@ -10,20 +10,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gms.datasource.DAOTrades;
+import com.gms.datasource.IdTrades;
 import com.gms.datasource.Trade;
 import com.gms.datasource.IdTrade;
 
 public class DAOTradesFiles implements DAOTrades {
-    	public Map<String, IdTrade> getTradeIds(String query) throws IOException, JsonProcessingException{
+    	public IdTrades getTradeIds(String query) throws IOException, JsonProcessingException{
 		
 		/// the database context is IdTrade, TradeType, TradeVersion, other index columns that can be used in the query ... , TradeXML or TradeJSON
 		String sql = "SELECT TradeType, IdTrade, TradeVersion from SummitTradeData where " + query;
 		
 		try
 		{
-			Map<String, IdTrade> tradeIds = new HashMap<>();
+			IdTrades tradeIds = new IdTrades();
 			IdTrade idTrade = new IdTrade("TradeType","IdTrade",1);
-			tradeIds.put(idTrade.getId(), idTrade);
+			tradeIds.add(idTrade);
 
 			ObjectMapper mapper = new ObjectMapper();
 			return tradeIds;
